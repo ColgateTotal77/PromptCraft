@@ -25,7 +25,7 @@ export function Sidebar() {
                 key={ item.href }
                 href={ item.href }
                 className={ `
-                  px-3 py-2 rounded-lg transition
+                  px-3 py-2 rounded-md transition
                   ${ active ? 'bg-gray-700' : 'hover:bg-gray-700' }
                 ` }
               >

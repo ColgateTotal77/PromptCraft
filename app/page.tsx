@@ -2,44 +2,64 @@
 
 import { useState } from 'react';
 import { Textarea } from '@/components/Textarea';
+import { systemPromptImprover } from '@/lib/prompts';
+import { MessageContainer } from '@/components/MessageContainer';
 
 export default function DashboardPage() {
-  const [ prompt, setPrompt ] = useState('');
-  const [ result, setResult ] = useState<string | null>(null);
-  const [ tries, setTries ] = useState(0);
+  const [prompt, setPrompt] = useState('');
+  const [messages, setMessages] = useState<
+    { role: 'user' | 'ai'; content: string }[]
+  >([]);
 
-  function handleImprove() {
-    if (tries >= 2) {
-      alert('Please log in to continue using the prompt improver!');
-      return;
-    }
+  async function handleImprove() {
+    if (!prompt.trim()) return;
 
-    // Temporary: just reverse the prompt as a placeholder
-    setResult(prompt.split('').reverse().join(''));
-    setTries((prev) => prev + 1);
+    setMessages(prev => [...prev, { role: 'user', content: prompt }]);
+
+    const res = await fetch('/api/improve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: "gpt-5-nano", systemPrompt: systemPromptImprover, prompt })
+    });
+
+    const data = await res.json();
+    console.log("data:", data);
+
+    setMessages(prev => [
+      ...prev,
+      { role: 'ai', content: data.output }
+    ]);
+
+    setPrompt('');
   }
 
-  const ImprovePrompt = () => {
-    return <button
+  const ImprovePrompt = () => (
+    <button
       className="bg-gray-800  h-4 w-4 leading-4 rounded"
-      onClick={ handleImprove }
+      onClick={handleImprove}
     >
       +
     </button>
-  }
+  );
 
   return (
     <div className="flex flex-col h-screen max-w-xl mx-auto border">
-      <div className="flex-1 overflow-y-auto p-4">
-        {result && (
-          <div className="mb-2 p-2  rounded shadow">
-            {result}
-          </div>
-        )}
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+        {messages.map((msg, i) => (
+          <MessageContainer
+            key={i}
+            direction={msg.role === 'user' ? 'right' : 'left'}
+          >
+            {msg.content}
+          </MessageContainer>
+        ))}
       </div>
+
       <Textarea
         placeholder="Input prompt"
-        endBtns={[<ImprovePrompt/>]}
+        value={prompt}
+        onChange={e => setPrompt(e.target.value)}
+        endBtns={[<ImprovePrompt key="improve" />]}
       />
     </div>
   );
