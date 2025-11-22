@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from "react";
-import { signInWithGitlab, signInWithGoogle } from '@/app/api/auth/login/actions';
+import { signInWithGitlab, signInWithGoogle } from '@/features/auth/actions';
 
 export function LoginDialog({ open, onClose }: {
   open: boolean;
