@@ -7,18 +7,16 @@ export type PromptFramework =
   | 'RTF'        // Role, Task, Format
   | 'TAG';       // Task, Action, Goal
 
-// Стратегия работы с отсутствующей информацией
 export type MissingInfoStrategy =
-  | 'USE_PLACEHOLDERS' // Вставлять [INSERT DATA] (Рекомендовано для SaaS)
-  | 'INFER_CREATIVELY'; // Пытаться угадать (Для новичков)
+  | 'USE_PLACEHOLDERS'
+  | 'INFER_CREATIVELY';
 
 export interface OptimizationSettings {
-  framework?: PromptFramework;       // Дефолт: STANDARD
-  missingInfo?: MissingInfoStrategy; // Дефолт: USE_PLACEHOLDERS
-  language?: 'MATCH_USER' | 'ENGLISH'; // Дефолт: MATCH_USER
+  framework?: PromptFramework;
+  missingInfo?: MissingInfoStrategy;
+  language?: 'MATCH_USER' | 'ENGLISH';
 }
 
-// Дефолтные настройки
 export const DEFAULT_SETTINGS: OptimizationSettings = {
   framework: 'STANDARD',
   missingInfo: 'USE_PLACEHOLDERS',

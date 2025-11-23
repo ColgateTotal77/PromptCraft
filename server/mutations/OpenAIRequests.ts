@@ -5,13 +5,13 @@ export async function runOpenAIRequest(
   model: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
   responseFormat: { type: "json_object" | "text" } = { type: "json_object" },
-  temperature: number = 0.2
+  temperature?: number
 ) {
   const response = await openai.chat.completions.create({
     model,
     messages,
     response_format: responseFormat,
-    temperature: temperature
+    temperature: temperature || undefined
   });
 
   const content = response.choices[0].message.content;
