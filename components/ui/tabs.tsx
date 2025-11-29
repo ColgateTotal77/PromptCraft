@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
+import { cn } from '@/lib/utils';
+import { DS } from '@/lib/design-system';
 
 const Tabs = TabsPrimitive.Root;
 
@@ -11,12 +12,12 @@ const TabsList = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
-    ref={ref}
-    className={cn(
-      "inline-flex w-full items-center border-b border-gray-200",
+    ref={ ref }
+    className={ cn(
+      'flex w-full items-center border-b border-gray-200',
       className
-    )}
-    {...props}
+    ) }
+    { ...props }
   />
 ));
 TabsList.displayName = TabsPrimitive.List.displayName;
@@ -26,12 +27,13 @@ const TabsTrigger = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 transition-all hover:text-gray-700 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-gray-900 data-[state=active]:text-gray-900",
+    ref={ ref }
+    className={ cn(DS.utils.center, DS.utils.disableable, DS.text.h4Muted,
+      `px-4 py-3 border-b-2 border-transparent transition-all
+      hover:text-gray-700 data-[state=active]:border-gray-900 data-[state=active]:text-gray-900`,
       className
-    )}
-    {...props}
+    ) }
+    { ...props }
   />
 ));
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
@@ -41,12 +43,12 @@ const TabsContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
-    ref={ref}
-    className={cn(
-      "mt-8 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2",
+    ref={ ref }
+    className={ cn(
+      'mt-8 ',
       className
-    )}
-    {...props}
+    ) }
+    { ...props }
   />
 ));
 TabsContent.displayName = TabsPrimitive.Content.displayName;

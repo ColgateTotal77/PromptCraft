@@ -1,80 +1,74 @@
-"use client";
+'use client';
 
-import React from "react";
-import {
-  Layout,
-  Settings,
-  Users,
-  Library,
-  LogOut,
-  Command
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Layout, Settings, Users, Library, LogOut, Command } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
+import { DS } from '@/lib/design-system';
 
 const navItems = [
-  { name: "Workspace", icon: Layout, href: "/" },
-  { name: "Community", icon: Users, href: "/community" },
-  { name: "Library", icon: Library, href: "/library" },
-  { name: "Settings", icon: Settings, href: "/settings" },
+  { name: 'Workspace', icon: Layout, href: '/' },
+  { name: 'Community', icon: Users, href: '/community' },
+  { name: 'Library', icon: Library, href: '/library' },
+  { name: 'Settings', icon: Settings, href: '/settings' },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[250px] border-r border-gray-200 bg-gray-50 flex flex-col justify-between z-30 hidden md:flex">
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center text-white shadow-sm">
-            <Command size={18} />
+    <aside className="flex flex-col justify-between w-[250px] h-full border-r border-gray-200 bg-gray-50 shrink-0">
+      <div className="flex flex-col gap-8 p-6">
+        <div className="flex items-center gap-2">
+          <div className={ cn(DS.utils.center, 'w-8 h-8 bg-gray-900 rounded-lg text-white shadow-sm') }>
+            <Command size={ 18 }/>
           </div>
           <span className="font-bold text-gray-900 text-lg tracking-tight">PromptCraft</span>
         </div>
 
         <nav className="space-y-1">
-          {navItems.map((item) => {
+          { navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                key={ item.name }
+                href={ item.href }
+                className={ cn(
+                  'w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200',
                   isActive
-                    ? "bg-white text-gray-900 shadow-sm border border-gray-200"
-                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-100/80"
-                )}
+                    ? `bg-white  shadow-sm border border-gray-200 ${DS.text.h4}`
+                    : `hover:text-gray-900 hover:bg-gray-100/80 ${DS.text.h4Muted}`
+                ) }
               >
-                <item.icon size={18} />
-                {item.name}
+                <item.icon size={ 18 }/>
+                { item.name }
               </Link>
             );
-          })}
+          }) }
         </nav>
       </div>
 
-      <div className="p-6 border-t border-gray-200 bg-white/50 backdrop-blur-sm">
-        <div className="mb-4">
-          <div className="flex justify-between text-xs font-medium text-gray-500 mb-2">
+      <div className={ cn(DS.card.glass, 'flex flex-col gap-2 p-4') }>
+        <div className="flex flex-col gap-4">
+          <div className={ cn(DS.text.muted, 'flex justify-between') }>
             <span>Daily Generations</span>
             <span>3 / 20</span>
           </div>
-          <Progress value={15} />
+          <Progress value={ 15 }/>
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 overflow-hidden">
-            {/* Placeholder for avatar */}
+        <div className="flex items-center gap-3">
+          <div className={ cn(DS.avatar.base, DS.avatar.sm) }>
+            {/* <img src="..." alt="Avatar" /> */ }
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">Alex Developer</p>
-            <p className="text-xs text-gray-500 truncate">Pro Plan</p>
+            <p className={ cn(DS.text.h4, 'truncate') }>User</p> {/*Todo check what is truncate*/ }
+            <p className={ cn(DS.text.muted, 'font-normal truncate') }>Pro Plan</p>
           </div>
-          <button className="text-gray-400 hover:text-gray-600 transition-colors">
-            <LogOut size={16} />
+          <button className={ cn(DS.button.ghost, 'p-1 h-auto') }>
+            <LogOut size={ 16 }/>
           </button>
         </div>
       </div>
