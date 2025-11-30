@@ -19,7 +19,8 @@ export const DS = {
     h4: "text-sm font-medium text-gray-900",
     h4Muted: "text-sm font-medium text-gray-500",
     body: "text-sm text-gray-800 leading-relaxed",
-    muted: "text-xs font-medium text-gray-500",
+    meta: "text-xs font-medium text-gray-900",
+    metaMuted: "text-xs font-medium text-gray-500",
     label: "text-xs font-medium text-gray-500 uppercase tracking-wider",
   },
 

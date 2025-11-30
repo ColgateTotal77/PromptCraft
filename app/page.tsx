@@ -8,21 +8,31 @@ import { DS } from "@/lib/design-system";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { OptimizerSettings } from "@/components/dashboard/OptimizerSettings";
 import { OutputSection } from "@/components/dashboard/OutputSection";
+import { optimizePrompt } from "@/features/dashboard/actions";
+import { OptimizedPromptOutput, OptimizationSettings, DEFAULT_SETTINGS } from '@/types/prompt-craft';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("optimizer");
   const [inputPrompt, setInputPrompt] = useState("");
+  const [optimizationSettings, setOptimizationSettings] = useState<OptimizationSettings>(DEFAULT_SETTINGS);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [hasResult, setHasResult] = useState(false);
+  const [result, setResult] = useState<null | OptimizedPromptOutput>(null);
 
-  const handleImprove = () => {
+  const handleImprove = async () => {
     if (!inputPrompt.trim()) return;
+    console.log("Input prompt", optimizationSettings);
     setIsGenerating(true);
-    setHasResult(false);
-    setTimeout(() => {
-      setIsGenerating(false);
-      setHasResult(true);
-    }, 1500);
+    setResult(await optimizePrompt(inputPrompt, optimizationSettings));
+    setIsGenerating(false);
+  };
+
+  const updateOptimizationSettings = (
+    updates: Partial<OptimizationSettings>
+  ) => {
+    setOptimizationSettings(prevSettings => ({
+      ...prevSettings,
+      ...updates,
+    }));
   };
 
   return (
@@ -55,9 +65,9 @@ export default function DashboardPage() {
 
             <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <OptimizerSettings />
+                <OptimizerSettings settings={{optimizationSettings, updateOptimizationSettings}}/>
                 <span className={DS.utils.dividerVertical}></span>
-                <span className={DS.text.muted}>
+                <span className={DS.text.metaMuted}>
                   {inputPrompt.length} chars
                 </span>
               </div>
@@ -86,7 +96,7 @@ export default function DashboardPage() {
           </div>
 
           <AnimatePresence>
-            {hasResult && <OutputSection />}
+            {result && <OutputSection promptData={result} />}
           </AnimatePresence>
         </TabsContent>
 

@@ -1,9 +1,9 @@
-import { DEFAULT_SETTINGS, OptimizationSettings, PromptFramework } from '@/types/prompt-craft';
+import { OptimizationSettings, PromptFramework } from '@/types/prompt-craft';
 
 export function buildOptimizationSystemPrompt(
-  settings: OptimizationSettings = DEFAULT_SETTINGS
+  settings: OptimizationSettings
 ): string {
-  const { framework, missingInfo, language } = { ...DEFAULT_SETTINGS, ...settings };
+  const { framework, missingInfo, language } = { ...settings };
 
   const frameworkInstructions: Record<PromptFramework, string> = {
     'STANDARD': `

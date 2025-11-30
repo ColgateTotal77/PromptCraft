@@ -5,8 +5,51 @@ import { Sliders, ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
+import {
+  OptimizationSettings,
+  PromptFramework,
+  MissingInfoStrategy,
+  Language,
+  FRAMEWORK_DISPLAY_LABELS,
+  MISSING_INFO_DISPLAY_LABELS,
+  LANGUAGE_LABELS
+} from '@/types/prompt-craft';
 
-export function OptimizerSettings() {
+interface OptimizerSettingsProps {
+  settings: {
+    optimizationSettings: OptimizationSettings;
+    updateOptimizationSettings: (updates: Partial<OptimizationSettings>) => void;
+  };
+}
+
+export function OptimizerSettings({
+                                    settings: {
+                                      optimizationSettings,
+                                      updateOptimizationSettings
+                                    }
+                                  }: OptimizerSettingsProps) {
+  const { framework, language, missingInfo } = optimizationSettings;
+
+  const handleFrameworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateOptimizationSettings({ framework: e.target.value as PromptFramework });
+  };
+
+  const handleMissingInfoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateOptimizationSettings({ missingInfo: e.target.value as MissingInfoStrategy });
+  };
+
+  const handleLanguageChange = (newLang: Language) => {
+    updateOptimizationSettings({ language: newLang });
+  };
+
+  const getOptions = <TEnum extends Record<string, string>>(enumObject: TEnum) => {
+    return Object.entries(enumObject).map(([ key, label ]) => (
+      <option key={ key } value={ key }>
+        { label }
+      </option>
+    ));
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -26,30 +69,46 @@ export function OptimizerSettings() {
           <div className="space-y-2">
             <label className={ DS.text.label }>Framework</label>
             <select
-              className={ cn(DS.utils.focusRing, DS.text.h4, 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5') }>
-              <option>CO-STAR (Context, Obj...)</option>
-              <option>RTF (Role, Task, Format)</option>
-              <option>TAG (Task, Action, Goal)</option>
-              <option>Standard Improvement</option>
+              value={ framework }
+              onChange={ handleFrameworkChange }
+              className={ cn(DS.utils.focusRing, DS.text.h4, 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5') }
+            >
+              { getOptions(FRAMEWORK_DISPLAY_LABELS) }
             </select>
           </div>
 
           <div className="space-y-2">
             <label className={ DS.text.label }>Language</label>
             <div className="flex bg-gray-100 p-0.5 rounded-md">
-              <button className={ cn(DS.text.h4, 'flex-1 py-1 bg-white shadow-sm rounded-sm') }>Auto
-              </button>
-              <button className={ cn(DS.text.muted, 'flex-1 py-1 hover:text-gray-900') }>English</button>
+              { Object.entries(LANGUAGE_LABELS).map(([ key, label ]) => (
+                <button
+                  key={ key }
+                  onClick={ () => handleLanguageChange(key as Language) }
+                  className={ cn(
+                    'flex-1 py-1 rounded-sm',
+                    language === key
+                      ? 'bg-white shadow-sm ' + DS.text.meta
+                      : DS.text.metaMuted
+                  ) }
+                >
+                  { label }
+                </button>
+              )) }
             </div>
           </div>
 
           <div className="space-y-2">
             <label className={ DS.text.label }>Missing Info</label>
             <select
-              className={ cn(DS.utils.focusRing, DS.text.h4, 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5') }>
-              <option>Add Placeholders like [Data]</option>
-              <option>Infer Creatively</option>
-              <option>Ask Clarifying Questions</option>
+              value={ missingInfo }
+              onChange={ handleMissingInfoChange }
+              className={ cn(
+                DS.utils.focusRing,
+                DS.text.h4,
+                'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5'
+              ) }
+            >
+              { getOptions(MISSING_INFO_DISPLAY_LABELS) }
             </select>
           </div>
         </div>

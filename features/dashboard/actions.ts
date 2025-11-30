@@ -10,9 +10,9 @@ interface OptimizedPromptOutput {
   optimized_prompt: string;
 }
 
-export async function optimizePrompt(userPrompt: string, systemPromptProps?: OptimizationSettings): Promise<OptimizedPromptOutput> {
+export async function optimizePrompt(userPrompt: string, systemPromptProps: OptimizationSettings): Promise<OptimizedPromptOutput> {
   const systemPrompt = buildOptimizationSystemPrompt(systemPromptProps);
-
+  console.log(systemPrompt)
   const messages = [
     { role: 'system', content: systemPrompt },
     { role: 'user', content: userPrompt },

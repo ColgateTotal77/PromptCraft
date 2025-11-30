@@ -52,7 +52,7 @@ export function Sidebar() {
 
       <div className={ cn(DS.card.glass, 'flex flex-col gap-2 p-4') }>
         <div className="flex flex-col gap-4">
-          <div className={ cn(DS.text.muted, 'flex justify-between') }>
+          <div className={ cn(DS.text.metaMuted, 'flex justify-between') }>
             <span>Daily Generations</span>
             <span>3 / 20</span>
           </div>
@@ -65,7 +65,7 @@ export function Sidebar() {
           </div>
           <div className="flex-1 min-w-0">
             <p className={ cn(DS.text.h4, 'truncate') }>User</p> {/*Todo check what is truncate*/ }
-            <p className={ cn(DS.text.muted, 'font-normal truncate') }>Pro Plan</p>
+            <p className={ cn(DS.text.metaMuted, 'font-normal truncate') }>Pro Plan</p>
           </div>
           <button className={ cn(DS.button.ghost, 'p-1 h-auto') }>
             <LogOut size={ 16 }/>
