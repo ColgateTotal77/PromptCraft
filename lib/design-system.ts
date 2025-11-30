@@ -43,11 +43,6 @@ export const DS = {
     progressIndicator: "h-full w-full bg-gray-900 transition-all duration-500 ease-in-out",
   },
 
-  animation: {
-    scaleFade: "animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
-    slideDirections: "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-  },
-
   avatar: {
     base: "relative inline-block overflow-hidden rounded-full bg-gray-200 border border-gray-300 shrink-0",
     sm: "w-8 h-8",
