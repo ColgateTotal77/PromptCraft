@@ -8,14 +8,16 @@ import { DS } from '@/lib/design-system';
 import { cn } from '@/lib/utils';
 import { OptimizedPromptOutput } from '@/types/prompt-craft';
 
-interface OutputSectionProps { promptData: OptimizedPromptOutput }
+interface OutputSectionProps {
+  promptData: OptimizedPromptOutput;
+}
 
 export function OutputSection({ promptData }: OutputSectionProps) {
   return (
     <motion.div
       initial={ { opacity: 0, y: 10 } }
       animate={ { opacity: 1, y: 0 } }
-      exit={{ opacity: 0, y: 10 }}
+      exit={ { opacity: 0, y: 10 } }
       transition={ { duration: 0.4, ease: 'easeOut' } }
       className="space-y-6"
     >
@@ -61,18 +63,18 @@ export function OutputSection({ promptData }: OutputSectionProps) {
               <p>
                 { promptData.optimized_prompt }
               </p>
-              {/*<p><span className="text-gray-400 select-none"># CONTEXT #</span><br/>*/}
-              {/*  You are an expert Senior Frontend Engineer specializing in React performance optimization.*/}
-              {/*</p>*/}
-              {/*<p><span className="text-gray-400 select-none"># OBJECTIVE #</span><br/>*/}
-              {/*  Write a comprehensive blog post explaining "React.memo" and "useMemo".*/}
-              {/*</p>*/}
-              {/*<p><span className="text-gray-400 select-none"># STYLE #</span><br/>*/}
-              {/*  Technical, authoritative, yet accessible to intermediate developers.*/}
-              {/*</p>*/}
-              {/*<p><span className="text-gray-400 select-none"># FORMAT #</span><br/>*/}
-              {/*  Markdown with code snippets.*/}
-              {/*</p>*/}
+              {/*<p><span className="text-gray-400 select-none"># CONTEXT #</span><br/>*/ }
+              {/*  You are an expert Senior Frontend Engineer specializing in React performance optimization.*/ }
+              {/*</p>*/ }
+              {/*<p><span className="text-gray-400 select-none"># OBJECTIVE #</span><br/>*/ }
+              {/*  Write a comprehensive blog post explaining "React.memo" and "useMemo".*/ }
+              {/*</p>*/ }
+              {/*<p><span className="text-gray-400 select-none"># STYLE #</span><br/>*/ }
+              {/*  Technical, authoritative, yet accessible to intermediate developers.*/ }
+              {/*</p>*/ }
+              {/*<p><span className="text-gray-400 select-none"># FORMAT #</span><br/>*/ }
+              {/*  Markdown with code snippets.*/ }
+              {/*</p>*/ }
             </div>
 
           </div>

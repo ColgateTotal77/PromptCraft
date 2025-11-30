@@ -10,12 +10,12 @@ const PopoverContext = React.createContext<{ open: boolean; setOpen: (open: bool
 
 const usePopover = () => {
   const context = React.useContext(PopoverContext);
-  if (!context) throw new Error("usePopover must be used within a Popover");
+  if (!context) throw new Error('usePopover must be used within a Popover');
   return context;
 };
 
 const Popover = ({ children, ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) => {
-  const [open, setOpen] = React.useState(props.defaultOpen || false);
+  const [ open, setOpen ] = React.useState(props.defaultOpen || false);
 
   const isControlled = props.open !== undefined;
   const isOpen = isControlled ? props.open! : open;
@@ -25,9 +25,9 @@ const Popover = ({ children, ...props }: React.ComponentProps<typeof PopoverPrim
   };
 
   return (
-    <PopoverPrimitive.Root open={isOpen} onOpenChange={handleOpenChange} {...props}>
-      <PopoverContext.Provider value={{ open: isOpen, setOpen: handleOpenChange }}>
-        {children}
+    <PopoverPrimitive.Root open={ isOpen } onOpenChange={ handleOpenChange } { ...props }>
+      <PopoverContext.Provider value={ { open: isOpen, setOpen: handleOpenChange } }>
+        { children }
       </PopoverContext.Provider>
     </PopoverPrimitive.Root>
   );
@@ -43,26 +43,26 @@ const PopoverContent = React.forwardRef<
 
   return (
     <AnimatePresence>
-      {open && (
+      { open && (
         <PopoverPrimitive.Portal forceMount>
-          <PopoverPrimitive.Content align={align} sideOffset={sideOffset} asChild>
+          <PopoverPrimitive.Content align={ align } sideOffset={ sideOffset } asChild>
             <motion.div
-              ref={ref}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              className={cn(
+              ref={ ref }
+              initial={ { opacity: 0, scale: 0.95 } }
+              animate={ { opacity: 1, scale: 1 } }
+              exit={ { opacity: 0, scale: 0.95 } }
+              transition={ { duration: 0.2, ease: 'easeInOut' } }
+              className={ cn(
                 DS.card.base,
                 DS.card.floating,
                 'w-72',
                 className
-              )}
-              {...(props as HTMLMotionProps<'div'>)}
+              ) }
+              { ...(props as HTMLMotionProps<'div'>) }
             />
           </PopoverPrimitive.Content>
         </PopoverPrimitive.Portal>
-      )}
+      ) }
     </AnimatePresence>
   );
 });

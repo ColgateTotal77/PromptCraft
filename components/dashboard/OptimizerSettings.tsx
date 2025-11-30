@@ -16,18 +16,11 @@ import {
 } from '@/types/prompt-craft';
 
 interface OptimizerSettingsProps {
-  settings: {
-    optimizationSettings: OptimizationSettings;
-    updateOptimizationSettings: (updates: Partial<OptimizationSettings>) => void;
-  };
+  optimizationSettings: OptimizationSettings;
+  updateOptimizationSettings: (updates: Partial<OptimizationSettings>) => void;
 }
 
-export function OptimizerSettings({
-                                    settings: {
-                                      optimizationSettings,
-                                      updateOptimizationSettings
-                                    }
-                                  }: OptimizerSettingsProps) {
+export function OptimizerSettings({ optimizationSettings, updateOptimizationSettings }: OptimizerSettingsProps) {
   const { framework, language, missingInfo } = optimizationSettings;
 
   const handleFrameworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
