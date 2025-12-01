@@ -1,9 +1,9 @@
 import React from 'react';
-import { LogOut, Command } from 'lucide-react';
+import { Command } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 import { DS } from '@/lib/design-system';
 import { SidebarNav } from '@/components/sidebar/SidebarNav';
+import { UserBlock } from '@/components/sidebar/UserBlock';
 
 export function Sidebar() {
   return (
@@ -17,26 +17,7 @@ export function Sidebar() {
         </div>
         <SidebarNav/>
       </div>
-
-      <div className={ cn(DS.card.glass, 'flex flex-col gap-2 p-4') }>
-        <div className="flex flex-col gap-4">
-          <div className={ cn(DS.text.metaMuted, 'flex justify-between') }>
-            <span>Daily Generations</span>
-            <span>3 / 20</span>
-          </div>
-          <Progress value={ 15 }/>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className={ cn(DS.avatar.base, DS.avatar.sm) }></div>
-          <div className="flex-1 min-w-0">
-            <p className={ cn(DS.text.h4, 'truncate') }>User</p> {/*Todo check what is truncate*/ }
-            <p className={ cn(DS.text.metaMuted, 'font-normal truncate') }>Pro Plan</p>
-          </div>
-          <button className={ cn(DS.button.ghost, 'p-1 h-auto') }>
-            <LogOut size={ 16 }/>
-          </button>
-        </div>
-      </div>
+        <UserBlock/>
     </aside>
   );
 }

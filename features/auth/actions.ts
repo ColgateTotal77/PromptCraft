@@ -25,3 +25,7 @@ export async function signInWithGitlab() {
   if (error) console.error(error);
   return data;
 }
+
+export async function signOutUser() {
+  await supabase.auth.signOut();
+}
