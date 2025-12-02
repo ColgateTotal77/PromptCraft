@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/server/services/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
+import { Loading } from '@/components/ui/loading';
 
 export default function AuthCallback() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function AuthCallback() {
     supabase.auth.getSession().then(() => {
       router.push('/');
     });
-  }, [router]);
+  }, [ router ]);
 
-  return <p>Loading...</p>;
+  return <Loading/>;
 }

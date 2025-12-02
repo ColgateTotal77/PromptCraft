@@ -1,5 +1,6 @@
-import { openai } from '@/server/services/openai';
-import OpenAI from 'openai';
+import OpenAI from "openai";
+
+export const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function runOpenAIRequest(
   model: string,

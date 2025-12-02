@@ -1,5 +1,3 @@
-// types/prompt-craft.ts
-
 export const enum PromptFramework {
   STANDARD = 'STANDARD', // Обычное улучшение (ясность + структура)
   CO_STAR = 'CO-STAR',   // Context, Objective, Style, Tone, Audience, Response

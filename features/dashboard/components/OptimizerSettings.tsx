@@ -13,7 +13,7 @@ import {
   FRAMEWORK_DISPLAY_LABELS,
   MISSING_INFO_DISPLAY_LABELS,
   LANGUAGE_LABELS
-} from '@/types/prompt-craft';
+} from '@/features/dashboard/types';
 
 interface OptimizerSettingsProps {
   optimizationSettings: OptimizationSettings;

@@ -2,8 +2,8 @@ import React from 'react';
 import { Command } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
-import { SidebarNav } from '@/components/sidebar/SidebarNav';
-import { UserBlock } from '@/components/sidebar/UserBlock';
+import { SidebarNav } from '@/features/sidebar/components/SidebarNav';
+import { UserBlock } from '@/features/sidebar/components/UserBlock';
 
 export function Sidebar() {
   return (
@@ -17,7 +17,7 @@ export function Sidebar() {
         </div>
         <SidebarNav/>
       </div>
-        <UserBlock/>
+      <UserBlock/>
     </aside>
   );
 }

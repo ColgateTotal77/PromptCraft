@@ -6,10 +6,10 @@ import { Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { OptimizerSettings } from '@/components/dashboard/OptimizerSettings';
-import { OutputSection } from '@/components/dashboard/OutputSection';
 import { optimizePrompt } from '@/features/dashboard/actions';
-import { OptimizedPromptOutput, OptimizationSettings, DEFAULT_SETTINGS } from '@/types/prompt-craft';
+import { DEFAULT_SETTINGS, OptimizationSettings, OptimizedPromptOutput } from '@/features/dashboard/types';
+import { OptimizerSettings } from '@/features/dashboard/components/OptimizerSettings';
+import { OutputSection } from '@/features/dashboard/components/OutputSection';
 
 export default function Workspace() {
   const [ activeTab, setActiveTab ] = useState('optimizer');

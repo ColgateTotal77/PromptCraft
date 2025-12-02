@@ -1,12 +1,12 @@
 'use client';
 
-import { supabase } from '@/server/services/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
+    provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`
+      redirectTo: `${ window.location.origin }/auth/callback`
     }
   });
 
@@ -16,9 +16,9 @@ export async function signInWithGoogle() {
 
 export async function signInWithGitlab() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "gitlab",
+    provider: 'gitlab',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`
+      redirectTo: `${ window.location.origin }/auth/callback`
     }
   });
 

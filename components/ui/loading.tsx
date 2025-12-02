@@ -8,5 +8,5 @@ export const Loading = () => {
         <div className="h-8 bg-gray-200 rounded"></div>
       </div>
     </div>
-  )
-}
+  );
+};

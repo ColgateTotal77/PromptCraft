@@ -1,7 +1,7 @@
 import { DS } from '@/lib/design-system';
 import { cn } from '@/lib/utils';
-import Workspace from '@/components/dashboard/Workspace';
 import React from 'react';
+import Workspace from '@/features/dashboard/components/Workspace';
 
 export default function DashboardPage() {
   return (
