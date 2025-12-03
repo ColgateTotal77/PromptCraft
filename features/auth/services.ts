@@ -16,7 +16,7 @@ export async function signInWithGoogle() {
 
 export async function signInWithGitlab() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'gitlab',
+    provider: 'github',
     options: {
       redirectTo: `${ window.location.origin }/auth/callback`
     }
