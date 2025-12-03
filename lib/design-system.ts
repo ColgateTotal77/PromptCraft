@@ -45,7 +45,7 @@ export const DS = {
   },
 
   avatar: {
-    base: "relative inline-block overflow-hidden rounded-full bg-gray-200 border border-gray-300 shrink-0",
+    base: "relative inline-block overflow-hidden rounded-full bg-gray-900 border border-gray-300 shrink-0",
     sm: "w-8 h-8",
     md: "w-10 h-10",
     lg: "w-12 h-12"

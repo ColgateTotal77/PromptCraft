@@ -1,6 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { fetchUserStats } from '@/features/user/api';
+import { LIMITS } from '@/lib/constants';
+
+const mockData = {
+  improverUsageCount: 0,
+  extractorUsageCount: 0,
+  isPro: false,
+  limit: LIMITS.UNLOGGED,
+  profile: {
+    username: 'undefined',
+    avatar_url: null,
+    email: 'undefined',
+  },
+};
 
 export const useUserStats = () => {
   const user = useCurrentUser();
@@ -14,7 +27,7 @@ export const useUserStats = () => {
 
   return {
     user,
-    stats: query.data,
+    stats: query.data || mockData,
     isLoading: user === undefined || query.isLoading,
     isError: query.isError,
   };

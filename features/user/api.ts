@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { LIMITS } from '@/lib/constants';
 import { UserStatsData } from '@/features/user/types';
 
-export const fetchUserStats = async (userId: string): Promise<UserStatsData | null> => {
+export const fetchUserStats = async (userId: string): Promise<UserStatsData> => {
   const toDay = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
 
   const [ profileRes, subRes, improverUsage, extractorUsage ] = await Promise.all([
@@ -24,7 +24,7 @@ export const fetchUserStats = async (userId: string): Promise<UserStatsData | nu
     improverUsageCount: improverUsage.count || 0,
     extractorUsageCount: extractorUsage.count || 0,
     isPro,
-    limit: isPro ? LIMITS.PRO : LIMITS.FREE,
+    limit: profileRes.data ? (isPro ? LIMITS.PRO : LIMITS.FREE) : LIMITS.UNLOGGED,
     profile: profileRes.data || {
       username: 'undefined',
       avatar_url: null,

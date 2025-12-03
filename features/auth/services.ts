@@ -14,7 +14,7 @@ export async function signInWithGoogle() {
   return data;
 }
 
-export async function signInWithGitlab() {
+export async function signInWithGithub() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'github',
     options: {
