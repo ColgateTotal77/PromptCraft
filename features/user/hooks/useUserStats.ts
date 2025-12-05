@@ -10,7 +10,7 @@ const mockData = {
   limit: LIMITS.UNLOGGED,
   profile: {
     username: 'undefined',
-    avatar_url: null,
+    avatarUrl: null,
     email: 'undefined',
   },
 };

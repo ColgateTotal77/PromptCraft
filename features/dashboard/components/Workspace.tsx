@@ -6,7 +6,7 @@ import { Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { optimizePrompt } from '@/features/dashboard/actions';
+import { createPromptHistory, optimizePrompt } from '@/features/dashboard/actions';
 import { DEFAULT_SETTINGS, OptimizationSettings, OptimizedPromptOutput } from '@/features/dashboard/types';
 import { OptimizerSettings } from '@/features/dashboard/components/OptimizerSettings';
 import { OutputSection } from '@/features/dashboard/components/OutputSection';
@@ -20,9 +20,16 @@ export default function Workspace() {
 
   const handleImprove = async () => {
     if (!inputPrompt.trim()) return;
-    console.log('Input prompt', optimizationSettings);
     setIsGenerating(true);
-    setResult(await optimizePrompt(inputPrompt, optimizationSettings));
+    const generatedData = await optimizePrompt(inputPrompt, optimizationSettings);
+    setResult(generatedData);
+    await createPromptHistory({
+      prompt: inputPrompt,
+      scores: generatedData?.scores,
+      optimizedPrompt: generatedData?.optimizedPrompt,
+      settings: optimizationSettings,
+    });
+
     setIsGenerating(false);
   };
 

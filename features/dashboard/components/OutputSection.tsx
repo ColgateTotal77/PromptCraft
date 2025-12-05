@@ -6,7 +6,7 @@ import { Copy, Save, FileOutput } from 'lucide-react';
 import { ScoreCard } from './ScoreCard';
 import { DS } from '@/lib/design-system';
 import { cn } from '@/lib/utils';
-import { OptimizedPromptOutput } from '@/types/prompt-craft';
+import { OptimizedPromptOutput } from '@/features/dashboard/types';
 
 interface OutputSectionProps {
   promptData: OptimizedPromptOutput;
@@ -61,7 +61,7 @@ export function OutputSection({ promptData }: OutputSectionProps) {
             {/*ToDo replace*/ }
             <div className="flex flex-col gap-4 p-6 font-mono text-sm leading-relaxed text-gray-800 h-full bg-white">
               <p>
-                { promptData.optimized_prompt }
+                { promptData.optimizedPrompt }
               </p>
               {/*<p><span className="text-gray-400 select-none"># CONTEXT #</span><br/>*/ }
               {/*  You are an expert Senior Frontend Engineer specializing in React performance optimization.*/ }

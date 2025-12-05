@@ -11,10 +11,9 @@ import { UserStatsData } from '@/features/user/types';
 import { signInWithGithub, signInWithGoogle, signOutUser } from '@/features/auth/services';
 
 const UserAvatar = ({ profile }: { profile: UserStatsData['profile'] }) => {
-  console.log('avatar', profile.avatar_url);
-  return profile.avatar_url ? (
+  return profile.avatarUrl ? (
     <img
-      src={ profile.avatar_url }
+      src={ profile.avatarUrl }
       alt={ `${ profile.username }'s avatar` }
       className={ cn(DS.avatar.base, DS.avatar.sm) }
     />

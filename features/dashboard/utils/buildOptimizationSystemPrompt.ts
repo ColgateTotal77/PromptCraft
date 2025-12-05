@@ -1,4 +1,4 @@
-import { OptimizationSettings, PromptFramework } from '@/types/prompt-craft';
+import { OptimizationSettings, PromptFramework } from '@/features/dashboard/types';
 
 export function buildOptimizationSystemPrompt(
   settings: OptimizationSettings
@@ -73,7 +73,7 @@ Schema:
     "clarity": number,
     "context": number
   },
-  "optimized_prompt": "The rewritten prompt string using the ${framework} framework"
+  "optimizedPrompt": "The rewritten prompt string using the ${framework} framework"
 }
   `.trim();
 }

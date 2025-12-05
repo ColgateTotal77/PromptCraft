@@ -1,18 +1,18 @@
 'use server';
 
-import { OptimizationSettings } from '@/types/prompt-craft';
 import OpenAI from 'openai';
 import { buildOptimizationSystemPrompt } from '@/features/dashboard/utils/buildOptimizationSystemPrompt';
 import { runOpenAIRequest } from '@/lib/openai';
+import { insertOptimizedPromptProps, OptimizationSettings } from '@/features/dashboard/types';
+import { insertOptimizedPrompt } from '@/features/dashboard/api';
 
 interface OptimizedPromptOutput {
   scores: { clarity: number, context: number };
-  optimized_prompt: string;
+  optimizedPrompt: string;
 }
 
 export async function optimizePrompt(userPrompt: string, systemPromptProps: OptimizationSettings): Promise<OptimizedPromptOutput> {
   const systemPrompt = buildOptimizationSystemPrompt(systemPromptProps);
-  console.log(systemPrompt);
   const messages = [
     { role: 'system', content: systemPrompt },
     { role: 'user', content: userPrompt },
@@ -24,4 +24,14 @@ export async function optimizePrompt(userPrompt: string, systemPromptProps: Opti
   );
 
   return result as OptimizedPromptOutput;
+}
+
+export async function createPromptHistory(props: insertOptimizedPromptProps) {
+  const result = await insertOptimizedPrompt(props)
+
+  if (!result.isSuccess) {
+    console.log(result.message)
+  }
+
+  console.log(result.message)
 }

@@ -5,7 +5,7 @@ export type UserStatsData = {
   limit: number;
   profile: {
     username: string | null;
-    avatar_url: string | null;
+    avatarUrl: string | null;
     email: string | null;
   };
 };

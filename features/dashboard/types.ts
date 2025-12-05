@@ -34,7 +34,7 @@ export const LANGUAGE_LABELS: Record<Language, string> = {
   [Language.ENGLISH]: 'English',
 }
 
-export interface OptimizationSettings {
+export type OptimizationSettings = {
   framework: PromptFramework;
   missingInfo: MissingInfoStrategy;
   language: Language;
@@ -46,7 +46,14 @@ export const DEFAULT_SETTINGS: OptimizationSettings = {
   language: Language.MATCH_USER,
 };
 
-export interface OptimizedPromptOutput {
+export type OptimizedPromptOutput = {
   scores: { clarity: number, context: number };
-  optimized_prompt: string;
+  optimizedPrompt: string;
+}
+
+export type insertOptimizedPromptProps = {
+  prompt: string;
+  optimizedPrompt?: string;
+  scores?: { clarity: number, context: number };
+  settings: OptimizationSettings;
 }
