@@ -29,9 +29,6 @@ export async function optimizePrompt(userPrompt: string, systemPromptProps: Opti
 export async function createPromptHistory(props: insertOptimizedPromptProps) {
   const result = await insertOptimizedPrompt(props)
 
-  if (!result.isSuccess) {
-    console.log(result.message)
-  }
-
   console.log(result.message)
+  return result;
 }

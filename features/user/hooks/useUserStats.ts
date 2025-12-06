@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { fetchUserStats } from '@/features/user/api';
 import { LIMITS } from '@/lib/constants';
+import { queryKeys } from '@/lib/query';
 
 const mockData = {
   improverUsageCount: 0,
@@ -19,7 +20,7 @@ export const useUserStats = () => {
   const user = useCurrentUser();
 
   const query = useQuery({
-    queryKey: [ 'user-stats', user?.id ],
+    queryKey: [ queryKeys.USER_STATS, user?.id ],
     queryFn: () => fetchUserStats(user!.id),
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5,

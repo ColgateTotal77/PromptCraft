@@ -10,6 +10,10 @@ import { createPromptHistory, optimizePrompt } from '@/features/dashboard/action
 import { DEFAULT_SETTINGS, OptimizationSettings, OptimizedPromptOutput } from '@/features/dashboard/types';
 import { OptimizerSettings } from '@/features/dashboard/components/OptimizerSettings';
 import { OutputSection } from '@/features/dashboard/components/OutputSection';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
+import { Tooltip } from '@/components/ui/tooltip';
 
 export default function Workspace() {
   const [ activeTab, setActiveTab ] = useState('optimizer');
@@ -17,18 +21,29 @@ export default function Workspace() {
   const [ optimizationSettings, setOptimizationSettings ] = useState<OptimizationSettings>(DEFAULT_SETTINGS);
   const [ isGenerating, setIsGenerating ] = useState(false);
   const [ result, setResult ] = useState<null | OptimizedPromptOutput>(null);
+  const user = useCurrentUser();
+  const queryClient = useQueryClient();
 
   const handleImprove = async () => {
     if (!inputPrompt.trim()) return;
     setIsGenerating(true);
     const generatedData = await optimizePrompt(inputPrompt, optimizationSettings);
     setResult(generatedData);
-    await createPromptHistory({
+    const response = await createPromptHistory({
       prompt: inputPrompt,
       scores: generatedData?.scores,
       optimizedPrompt: generatedData?.optimizedPrompt,
       settings: optimizationSettings,
     });
+
+    if (response.isSuccess) {
+      if (user?.id) {
+        queryClient.invalidateQueries({
+          queryKey: [ queryKeys.USER_STATS, user.id ],
+        });
+      }
+    } else {
+    }
 
     setIsGenerating(false);
   };
