@@ -49,6 +49,7 @@ export const DEFAULT_SETTINGS: OptimizationSettings = {
 export type OptimizedPromptOutput = {
   scores: { clarity: number, context: number };
   optimizedPrompt: string;
+  framework?: string;
 }
 
 export type insertOptimizedPromptProps = {
