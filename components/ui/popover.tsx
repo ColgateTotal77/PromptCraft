@@ -14,28 +14,21 @@ const usePopover = () => {
   return context;
 };
 
-const Popover = ({ children, ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) => {
-  const [ open, setOpen ] = React.useState(props.defaultOpen || false);
-
-  const isControlled = props.open !== undefined;
-  const isOpen = isControlled ? props.open! : open;
-  const handleOpenChange = (newState: boolean) => {
-    if (!isControlled) setOpen(newState);
-    props.onOpenChange?.(newState);
-  };
+export const Popover = ({ children, ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) => {
+  const [ open, setOpen ] = React.useState(props.open || false);
 
   return (
-    <PopoverPrimitive.Root open={ isOpen } onOpenChange={ handleOpenChange } { ...props }>
-      <PopoverContext.Provider value={ { open: isOpen, setOpen: handleOpenChange } }>
+    <PopoverPrimitive.Root open={ open } onOpenChange={ setOpen } { ...props }>
+      <PopoverContext.Provider value={ { open, setOpen } }>
         { children }
       </PopoverContext.Provider>
     </PopoverPrimitive.Root>
   );
 };
 
-const PopoverTrigger = PopoverPrimitive.Trigger;
+export const PopoverTrigger = PopoverPrimitive.Trigger;
 
-const PopoverContent = React.forwardRef<
+export const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(({ className, align = 'center', sideOffset = 4, ...props }, ref) => {
@@ -66,6 +59,5 @@ const PopoverContent = React.forwardRef<
     </AnimatePresence>
   );
 });
-PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
-export { Popover, PopoverTrigger, PopoverContent };
+PopoverContent.displayName = PopoverPrimitive.Content.displayName;
