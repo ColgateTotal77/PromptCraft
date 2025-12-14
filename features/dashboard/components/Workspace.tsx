@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { PromptOptimizer } from '@/features/dashboard/components/PromptOptimizer';
-import { PromptExtractor } from '@/features/dashboard/components/PromptExtractor';
+import { PromptOptimizer } from '@/features/dashboard/components/PromptOptimizer/PromptOptimizer';
+import { TemplateExtractor } from '@/features/dashboard/components/TemplateExtractor/TemplateExtractor';
 
 export default function Workspace() {
   const [activeTab, setActiveTab] = useState('optimizer');
@@ -28,7 +28,7 @@ export default function Workspace() {
       </TabsContent>
 
       <TabsContent value="extractor">
-        <PromptExtractor initialPrompt={extractorData} />
+        <TemplateExtractor initialPrompt={extractorData} />
       </TabsContent>
     </Tabs>
   );

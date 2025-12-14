@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Undo2, Copy, ClipboardEditIcon, FileOutput } from 'lucide-react';
-import { ScoreCard } from './ScoreCard';
 import { DS } from '@/lib/design-system';
 import { cn } from '@/lib/utils';
-import { OptimizedPromptOutput } from '@/features/dashboard/types';
+import { OptimizedPromptOutput } from '@/features/dashboard/types/optimizerTypes';
+import { ScoreCard } from '@/features/dashboard/components/PromptOptimizer/ScoreCard';
 
 interface OutputSectionProps {
   promptData: OptimizedPromptOutput;

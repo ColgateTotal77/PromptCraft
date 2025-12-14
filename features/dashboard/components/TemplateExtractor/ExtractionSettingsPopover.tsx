@@ -6,33 +6,35 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import {
-  OptimizationSettings,
-  PromptFramework,
-  MissingInfoStrategy,
-  Language,
-  FRAMEWORK_DISPLAY_LABELS,
-  MISSING_INFO_DISPLAY_LABELS,
-  LANGUAGE_LABELS
-} from '@/features/dashboard/types';
+  GeneralizationLevel,
+  TemplateSyntax,
+  ExtractionSettings,
+  SYNTAX_DISPLAY_LABELS, GENERALIZATION_DISPLAY_LABELS
+} from '@/features/dashboard/types/extractorTypes';
+import { Language, LANGUAGE_LABELS } from '@/features/dashboard/types/types';
 
-interface OptimizerSettingsProps {
-  optimizationSettings: OptimizationSettings;
-  updateOptimizationSettings: (updates: Partial<OptimizationSettings>) => void;
+interface ExtractionSettingsProps {
+  extractionSettings: ExtractionSettings;
+  updateExtractionSettings: (updates: Partial<ExtractionSettings>) => void;
 }
 
-export function OptimizerSettings({ optimizationSettings, updateOptimizationSettings }: OptimizerSettingsProps) {
-  const { framework, language, missingInfo } = optimizationSettings;
+export function ExtractionSettingsPopover({ extractionSettings, updateExtractionSettings }: ExtractionSettingsProps) {
+  const {
+    syntax = TemplateSyntax.SQUARE_BRACKETS,
+    level = GeneralizationLevel.BALANCED,
+    language = Language.MATCH_USER
+  } = extractionSettings;
 
-  const handleFrameworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateOptimizationSettings({ framework: e.target.value as PromptFramework });
+  const handleSyntaxChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateExtractionSettings({ syntax: e.target.value as TemplateSyntax });
   };
 
-  const handleMissingInfoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateOptimizationSettings({ missingInfo: e.target.value as MissingInfoStrategy });
+  const handleLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateExtractionSettings({ level: e.target.value as GeneralizationLevel });
   };
 
   const handleLanguageChange = (newLang: Language) => {
-    updateOptimizationSettings({ language: newLang });
+    updateExtractionSettings({ language: newLang });
   };
 
   const getOptions = <TEnum extends Record<string, string>>(enumObject: TEnum) => {
@@ -60,13 +62,13 @@ export function OptimizerSettings({ optimizationSettings, updateOptimizationSett
           </h4>
 
           <div className="space-y-2">
-            <label className={ DS.text.label }>Framework</label>
+            <label className={ DS.text.label }>Syntax</label>
             <select
-              value={ framework }
-              onChange={ handleFrameworkChange }
+              value={ syntax }
+              onChange={ handleSyntaxChange }
               className={ cn(DS.utils.focusRing, DS.text.h4, 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5') }
             >
-              { getOptions(FRAMEWORK_DISPLAY_LABELS) }
+              { getOptions(SYNTAX_DISPLAY_LABELS) }
             </select>
           </div>
 
@@ -91,19 +93,20 @@ export function OptimizerSettings({ optimizationSettings, updateOptimizationSett
           </div>
 
           <div className="space-y-2">
-            <label className={ DS.text.label }>Missing Info</label>
+            <label className={ DS.text.label }>Generalization Level</label>
             <select
-              value={ missingInfo }
-              onChange={ handleMissingInfoChange }
+              value={ level }
+              onChange={ handleLevelChange }
               className={ cn(
                 DS.utils.focusRing,
                 DS.text.h4,
                 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5'
               ) }
             >
-              { getOptions(MISSING_INFO_DISPLAY_LABELS) }
+              { getOptions(GENERALIZATION_DISPLAY_LABELS) }
             </select>
           </div>
+
         </div>
       </PopoverContent>
     </Popover>

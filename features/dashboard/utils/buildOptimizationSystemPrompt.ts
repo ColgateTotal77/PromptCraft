@@ -1,4 +1,4 @@
-import { OptimizationSettings, PromptFramework } from '@/features/dashboard/types';
+import { OptimizationSettings, PromptFramework } from '@/features/dashboard/types/optimizerTypes';
 
 export function buildOptimizationSystemPrompt(
   settings: OptimizationSettings

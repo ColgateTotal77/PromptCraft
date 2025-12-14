@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
-import { OptimizerSettings } from '@/features/dashboard/components/OptimizerSettings';
+import { OptimizerSettingsPopover } from '@/features/dashboard/components/PromptOptimizer/OptimizerSettingsPopover';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
-import { OutputSection } from '@/features/dashboard/components/OutputSection';
+import { OutputSection } from '@/features/dashboard/components/PromptOptimizer/OutputSection';
 import React, { useState } from 'react';
-import { DEFAULT_SETTINGS, OptimizationSettings, OptimizedPromptOutput } from '@/features/dashboard/types';
+import { DEFAULT_OPTIMIZER_SETTINGS, OptimizationSettings, OptimizedPromptOutput } from '@/features/dashboard/types/optimizerTypes';
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { useQueryClient } from '@tanstack/react-query';
 import { createPromptHistory, optimizePrompt } from '@/features/dashboard/actions';
@@ -17,7 +17,7 @@ interface PromptOptimizerProps {
 
 export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
   const [ inputPrompt, setInputPrompt ] = useState('');
-  const [ optimizationSettings, setOptimizationSettings ] = useState<OptimizationSettings>(DEFAULT_SETTINGS);
+  const [ optimizationSettings, setOptimizationSettings ] = useState<OptimizationSettings>(DEFAULT_OPTIMIZER_SETTINGS);
   const [ isGenerating, setIsGenerating ] = useState(false);
   const [ result, setResult ] = useState<null | OptimizedPromptOutput>(null);
   const [ editedPrompt, setEditedPrompt ] = useState('');
@@ -69,7 +69,7 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
 
         <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <OptimizerSettings
+            <OptimizerSettingsPopover
               optimizationSettings={ optimizationSettings }
               updateOptimizationSettings={ updateOptimizationSettings }
             />
@@ -113,6 +113,5 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
         }
       </AnimatePresence>
     </>
-
   );
 }

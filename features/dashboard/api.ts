@@ -1,5 +1,5 @@
 import { createSupabase } from '@/lib/supabaseServer';
-import { insertOptimizedPromptProps } from '@/features/dashboard/types';
+import { insertOptimizedPromptProps } from '@/features/dashboard/types/optimizerTypes';
 
 export async function insertOptimizedPrompt(props: insertOptimizedPromptProps) {
   const supabase = await createSupabase();
