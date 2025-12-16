@@ -65,9 +65,7 @@ export type ExtractedTemplateOutput = {
 };
 
 // Props для сохранения/обработки
-export type InsertExtractedTemplateProps = {
-  originalPrompt: string;
-  extractedTemplate: string;
-  variables: TemplateVariable[];
-  settings: ExtractionSettings;
+export type insertExtractedTemplateProps = {
+  prompt: string;
+  template: string;
 }

@@ -4,9 +4,12 @@ import OpenAI from 'openai';
 import { buildOptimizationSystemPrompt } from '@/features/dashboard/utils/buildOptimizationSystemPrompt';
 import { runOpenAIRequest } from '@/lib/openai';
 import { insertOptimizedPromptProps, OptimizationSettings } from '@/features/dashboard/types/optimizerTypes';
-import { insertOptimizedPrompt } from '@/features/dashboard/api';
+import { insertExtractedTemplate, insertOptimizedPrompt } from '@/features/dashboard/api';
 import { buildExtractionSystemPrompt } from '@/features/dashboard/utils/buildExtractionSystemPrompt';
-import { ExtractedTemplateOutput, ExtractionSettings } from '@/features/dashboard/types/extractorTypes';
+import {
+  ExtractedTemplateOutput,
+  ExtractionSettings, insertExtractedTemplateProps,
+} from '@/features/dashboard/types/extractorTypes';
 
 interface OptimizedPromptOutput {
   scores: { clarity: number, context: number };
@@ -50,4 +53,11 @@ export async function extractTemplate(userPrompt: string, systemPromptProps: Ext
   console.log(JSON.stringify(result, null, 2))
 
   return result as ExtractedTemplateOutput;
+}
+
+export async function createExtractionHistory(props: insertExtractedTemplateProps) {
+  const result = await insertExtractedTemplate(props)
+
+  console.log(result.message)
+  return result;
 }

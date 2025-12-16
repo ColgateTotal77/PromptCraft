@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 import { ExtractionSettingsPopover } from '@/features/dashboard/components/TemplateExtractor/ExtractionSettingsPopover';
 import { OutputSection } from '@/features/dashboard/components/TemplateExtractor/OutputSection';
-import { extractTemplate } from '@/features/dashboard/actions';
+import { createExtractionHistory, extractTemplate } from '@/features/dashboard/actions';
 import {
   DEFAULT_EXTRACTION_SETTINGS,
   ExtractedTemplateOutput,
@@ -20,7 +20,7 @@ interface templateExtractorProps {
 }
 
 export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
-  const [ inputtemplate, setInputtemplate ] = useState(initialPrompt || '');
+  const [ inputTemplate, setInputTemplate ] = useState(initialPrompt || '');
   const [ extractionSettings, setExtractionSettings ] = useState<ExtractionSettings>(DEFAULT_EXTRACTION_SETTINGS);
   const [ isGenerating, setIsGenerating ] = useState(false);
   const [ result, setResult ] = useState<null | ExtractedTemplateOutput>(null);
@@ -29,26 +29,24 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
   const queryClient = useQueryClient();
 
   const handleExtraction = async () => {
-    if (!inputtemplate.trim()) return;
+    if (!inputTemplate.trim()) return;
     setIsGenerating(true);
-    const generatedData = await extractTemplate(inputtemplate, extractionSettings);
+    const generatedData = await extractTemplate(inputTemplate, extractionSettings);
     setResult(generatedData);
     setEditedTemplate(generatedData.template);
-    // const response = await createExtractionHistory({
-    //   template: inputtemplate,
-    //   scores: generatedData?.scores,
-    //   optimizedtemplate: generatedData?.optimizedtemplate,
-    //   settings: ExtractionSettingsPopover,
-    // });
+    const response = await createExtractionHistory({
+      prompt: inputTemplate,
+      template: inputTemplate,
+    });
 
-    // if (response.isSuccess) {
-    //   if (user?.id) {
-    //     await queryClient.invalidateQueries({
-    //       queryKey: [ queryKeys.USER_STATS, user.id ],
-    //     });
-    //   }
-    // } else {
-    // }
+    if (response.isSuccess) {
+      if (user?.id) {
+        await queryClient.invalidateQueries({
+          queryKey: [ queryKeys.USER_STATS, user.id ],
+        });
+      }
+    } else {
+    }
     setIsGenerating(false);
   };
 
@@ -65,8 +63,8 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
     <>
       <div className={ cn(DS.card.base, DS.input.wrapper, 'overflow-hidden') }>
             <textarea
-              value={ inputtemplate }
-              onChange={ (e) => setInputtemplate(e.target.value) }
+              value={ inputTemplate }
+              onChange={ (e) => setInputTemplate(e.target.value) }
               placeholder="Paste your rough idea here..."
               className={ cn(DS.input.base, DS.input.textarea, 'h-40 p-6') }
             />
@@ -78,16 +76,16 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
               updateExtractionSettings={ updateExtractionSettings }
             />
             <span className={ DS.utils.dividerVertical }></span>
-            <span className={ DS.text.metaMuted }>{ inputtemplate.length } chars</span>
+            <span className={ DS.text.metaMuted }>{ inputTemplate.length } chars</span>
           </div>
 
           <button
             onClick={ handleExtraction }
-            disabled={ !inputtemplate || isGenerating }
+            disabled={ !inputTemplate || isGenerating }
             className={ cn(
               DS.button.base,
               'px-5 py-2.5 shadow-sm',
-              !inputtemplate || isGenerating
+              !inputTemplate || isGenerating
                 ? DS.button.loading
                 : cn(DS.button.primary, 'hover:shadow-md')
             ) }

@@ -99,7 +99,7 @@ Schema:
       "name": "variable_id (e.g., topic, product_name)",
       "label": "Human readable label (e.g., Topic, Product Name)",
       "description": "Short hint for the user what to enter here",
-      "type": "text" | "number" | "date" | "select"
+      "type": "text" | "number" | "date"
     }
   ]
 }

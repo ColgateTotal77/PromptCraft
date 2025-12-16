@@ -58,7 +58,7 @@ export function ExtractionSettingsPopover({ extractionSettings, updateExtraction
       <PopoverContent align="start" className="w-[280px]">
         <div className="space-y-4">
           <h4 className={ cn(DS.text.h4, 'pb-2 border-b border-gray-100') }>
-            Optimization Settings
+            Extraction Settings
           </h4>
 
           <div className="space-y-2">
