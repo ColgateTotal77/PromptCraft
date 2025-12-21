@@ -1,9 +1,9 @@
-export const enum Language {
-  MATCH_USER = 'MATCH_USER',
-  ENGLISH = 'ENGLISH',
-}
+import { z } from 'zod';
+
+export const LanguageSchema = z.enum(['MATCH_USER', 'ENGLISH']);
+export type Language = z.infer<typeof LanguageSchema>;
 
 export const LANGUAGE_LABELS: Record<Language, string> = {
-  [Language.MATCH_USER]: 'Auto',
-  [Language.ENGLISH]: 'English',
+  MATCH_USER: 'Auto',
+  ENGLISH: 'English',
 }

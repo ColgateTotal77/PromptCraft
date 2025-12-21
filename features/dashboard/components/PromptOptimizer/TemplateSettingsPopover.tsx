@@ -1,36 +1,36 @@
 'use client';
 
 import React from 'react';
-import { Sliders, ChevronDown } from 'lucide-react';
+import { ChevronDown, LayoutTemplate } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import {
-  GeneralizationLevel,
-  TemplateSyntax,
-  ExtractionSettings,
-  SYNTAX_DISPLAY_LABELS, GENERALIZATION_DISPLAY_LABELS
-} from '@/features/dashboard/types/extractorTypes';
+  FRAMEWORK_DISPLAY_LABELS, MISSING_INFO_DISPLAY_LABELS,
+  MissingInfoStrategy,
+  OptimizationSettings,
+  PromptFramework
+} from '@/features/dashboard/types/optimizerTypes';
 import { Language, LANGUAGE_LABELS } from '@/features/dashboard/types/types';
 
-interface ExtractionSettingsProps {
-  extractionSettings: ExtractionSettings;
-  updateExtractionSettings: (updates: Partial<ExtractionSettings>) => void;
+interface TemplateSettingsProps {
+  optimizationSettings: OptimizationSettings;
+  updateOptimizationSettings: (updates: Partial<OptimizationSettings>) => void;
 }
 
-export function ExtractionSettingsPopover({ extractionSettings, updateExtractionSettings }: ExtractionSettingsProps) {
-  const { syntax, level, language } = extractionSettings;
+export function TemplateSettingsPopover({ optimizationSettings, updateOptimizationSettings }: TemplateSettingsProps) {
+  const { framework, language, missingInfo } = optimizationSettings;
 
-  const handleSyntaxChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateExtractionSettings({ syntax: e.target.value as TemplateSyntax });
+  const handleFrameworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateOptimizationSettings({ framework: e.target.value as PromptFramework });
   };
 
-  const handleLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateExtractionSettings({ level: e.target.value as GeneralizationLevel });
+  const handleMissingInfoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateOptimizationSettings({ missingInfo: e.target.value as MissingInfoStrategy });
   };
 
   const handleLanguageChange = (newLang: Language) => {
-    updateExtractionSettings({ language: newLang });
+    updateOptimizationSettings({ language: newLang });
   };
 
   const getOptions = <TEnum extends Record<string, string>>(enumObject: TEnum) => {
@@ -46,25 +46,25 @@ export function ExtractionSettingsPopover({ extractionSettings, updateExtraction
       <PopoverTrigger asChild>
         <button
           className={ cn(DS.button.base, DS.button.secondary, DS.utils.focusRing, 'text-xs px-3 py-1.5') }>
-          <Sliders size={ 14 }/>
-          Configuration
+          <LayoutTemplate size={ 14 }/>
+          Templates
           <ChevronDown size={ 12 } className="text-gray-400"/>
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[280px]">
         <div className="space-y-4">
           <h4 className={ cn(DS.text.h4, 'pb-2 border-b border-gray-100') }>
-            Extraction Settings
+            Optimization Settings
           </h4>
 
           <div className="space-y-2">
-            <label className={ DS.text.label }>Syntax</label>
+            <label className={ DS.text.label }>Framework</label>
             <select
-              value={ syntax }
-              onChange={ handleSyntaxChange }
+              value={ framework }
+              onChange={ handleFrameworkChange }
               className={ cn(DS.utils.focusRing, DS.text.h4, 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5') }
             >
-              { getOptions(SYNTAX_DISPLAY_LABELS) }
+              { getOptions(FRAMEWORK_DISPLAY_LABELS) }
             </select>
           </div>
 
@@ -89,20 +89,19 @@ export function ExtractionSettingsPopover({ extractionSettings, updateExtraction
           </div>
 
           <div className="space-y-2">
-            <label className={ DS.text.label }>Generalization Level</label>
+            <label className={ DS.text.label }>Missing Info</label>
             <select
-              value={ level }
-              onChange={ handleLevelChange }
+              value={ missingInfo }
+              onChange={ handleMissingInfoChange }
               className={ cn(
                 DS.utils.focusRing,
                 DS.text.h4,
                 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5'
               ) }
             >
-              { getOptions(GENERALIZATION_DISPLAY_LABELS) }
+              { getOptions(MISSING_INFO_DISPLAY_LABELS) }
             </select>
           </div>
-
         </div>
       </PopoverContent>
     </Popover>

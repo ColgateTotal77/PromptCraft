@@ -6,10 +6,8 @@ import { Sparkles, Zap } from 'lucide-react';
 import { OutputSection } from '@/features/dashboard/components/PromptOptimizer/OutputSection';
 import React, { useState } from 'react';
 import { DEFAULT_OPTIMIZER_SETTINGS, OptimizationSettings, OptimizedPromptOutput } from '@/features/dashboard/types/optimizerTypes';
-import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
-import { useQueryClient } from '@tanstack/react-query';
-import { createPromptHistory, optimizePrompt } from '@/features/dashboard/actions';
-import { queryKeys } from '@/lib/query';
+import { TemplateSettingsPopover } from '@/features/dashboard/components/PromptOptimizer/TemplateSettingsPopover';
+import { trpc } from '@/lib/trpc';
 
 interface PromptOptimizerProps {
   onExtract: (prompt?: string) => void;
@@ -18,34 +16,35 @@ interface PromptOptimizerProps {
 export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
   const [ inputPrompt, setInputPrompt ] = useState('');
   const [ optimizationSettings, setOptimizationSettings ] = useState<OptimizationSettings>(DEFAULT_OPTIMIZER_SETTINGS);
-  const [ isGenerating, setIsGenerating ] = useState(false);
   const [ result, setResult ] = useState<null | OptimizedPromptOutput>(null);
   const [ editedPrompt, setEditedPrompt ] = useState('');
-  const user = useCurrentUser();
-  const queryClient = useQueryClient();
+  const optimizeMutation = trpc.optimize.useMutation();
+  const saveMutation = trpc.saveOptimized.useMutation();
+  const utils = trpc.useUtils();
 
   const handleImprove = async () => {
     if (!inputPrompt.trim()) return;
-    setIsGenerating(true);
-    const generatedData = await optimizePrompt(inputPrompt, optimizationSettings);
-    setResult({ ...generatedData, framework: optimizationSettings.framework });
-    setEditedPrompt(generatedData.optimizedPrompt);
-    const response = await createPromptHistory({
-      prompt: inputPrompt,
-      scores: generatedData?.scores,
-      optimizedPrompt: generatedData?.optimizedPrompt,
-      settings: optimizationSettings,
-    });
 
-    if (response.isSuccess) {
-      if (user?.id) {
-        await queryClient.invalidateQueries({
-          queryKey: [ queryKeys.USER_STATS, user.id ],
-        });
-      }
-    } else {
+    try {
+      const generatedData = await optimizeMutation.mutateAsync({
+        userPrompt: inputPrompt,
+        settings: optimizationSettings,
+      });
+
+      setResult({ ...generatedData, framework: optimizationSettings.framework });
+      setEditedPrompt(generatedData.optimizedPrompt);
+
+      await saveMutation.mutateAsync({
+        originalPrompt: inputPrompt,
+        optimizedPrompt: generatedData.optimizedPrompt,
+        scores: generatedData.scores,
+      });
+
+      await utils.getStats.invalidate();
+
+    } catch (error) {
+      console.log(error);
     }
-    setIsGenerating(false);
   };
 
   const updateOptimizationSettings = (
@@ -74,21 +73,26 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
               updateOptimizationSettings={ updateOptimizationSettings }
             />
             <span className={ DS.utils.dividerVertical }></span>
+            <TemplateSettingsPopover
+              optimizationSettings={ optimizationSettings }
+              updateOptimizationSettings={ updateOptimizationSettings }
+            />
+            <span className={ DS.utils.dividerVertical }></span>
             <span className={ DS.text.metaMuted }>{ inputPrompt.length } chars</span>
           </div>
 
           <button
             onClick={ handleImprove }
-            disabled={ !inputPrompt || isGenerating }
+            disabled={ optimizeMutation.isPending }
             className={ cn(
               DS.button.base,
               'px-5 py-2.5 shadow-sm',
-              !inputPrompt || isGenerating
+              optimizeMutation.isPending
                 ? DS.button.loading
                 : cn(DS.button.primary, 'hover:shadow-md')
             ) }
           >
-            { isGenerating ? (
+            { optimizeMutation.isPending ? (
               <motion.div
                 animate={ { rotate: 360 } }
                 transition={ { duration: 1, repeat: Infinity, ease: 'linear' } }>
@@ -97,7 +101,7 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
             ) : (
               <Sparkles size={ 16 }/>
             ) }
-            { isGenerating ? 'Optimizing...' : 'Improve Prompt' }
+            { optimizeMutation.isPending ? 'Optimizing...' : 'Improve Prompt' }
           </button>
         </div>
       </div>

@@ -3,10 +3,10 @@ import { OptimizationSettings, PromptFramework } from '@/features/dashboard/type
 export function buildOptimizationSystemPrompt(
   settings: OptimizationSettings
 ): string {
-  const { framework, missingInfo, language } = { ...settings };
+  const { framework, missingInfo, language } = settings;
 
   const frameworkInstructions: Record<PromptFramework, string> = {
-    'STANDARD': `
+    STANDARD: `
       - Structure the prompt with clear headers (###).
       - Ensure the task is separated from the context.
       - Add "Step-by-Step" instructions if logic is complex.
@@ -20,13 +20,13 @@ export function buildOptimizationSystemPrompt(
       - (A) Audience: Who is this for?
       - (R) Response: Format constraints.
     `,
-    'RTF': `
+    RTF: `
       - REWRITE the prompt using the RTF framework:
       - [R] Role: Who is the AI?
       - [T] Task: What exactly must be done?
       - [F] Format: How should the output look?
     `,
-    'TAG': `
+    TAG: `
       - Use the TAG framework: Task, Action, Goal.
     `
   };

@@ -1,19 +1,16 @@
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import React, { useState } from 'react';
-import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
-import { useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 import { ExtractionSettingsPopover } from '@/features/dashboard/components/TemplateExtractor/ExtractionSettingsPopover';
 import { OutputSection } from '@/features/dashboard/components/TemplateExtractor/OutputSection';
-import { createExtractionHistory, extractTemplate } from '@/features/dashboard/actions';
 import {
   DEFAULT_EXTRACTION_SETTINGS,
   ExtractedTemplateOutput,
   ExtractionSettings
 } from '@/features/dashboard/types/extractorTypes';
-import { queryKeys } from '@/lib/query';
+import { trpc } from '@/lib/trpc';
 
 interface templateExtractorProps {
   initialPrompt?: string;
@@ -22,32 +19,32 @@ interface templateExtractorProps {
 export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
   const [ inputTemplate, setInputTemplate ] = useState(initialPrompt || '');
   const [ extractionSettings, setExtractionSettings ] = useState<ExtractionSettings>(DEFAULT_EXTRACTION_SETTINGS);
-  const [ isGenerating, setIsGenerating ] = useState(false);
   const [ result, setResult ] = useState<null | ExtractedTemplateOutput>(null);
   const [ editedTemplate, setEditedTemplate ] = useState('');
-  const user = useCurrentUser();
-  const queryClient = useQueryClient();
+  const extractMutation = trpc.extract.useMutation();
+  const saveMutation = trpc.saveExtracted.useMutation();
+  const utils = trpc.useUtils();
 
   const handleExtraction = async () => {
     if (!inputTemplate.trim()) return;
-    setIsGenerating(true);
-    const generatedData = await extractTemplate(inputTemplate, extractionSettings);
-    setResult(generatedData);
-    setEditedTemplate(generatedData.template);
-    const response = await createExtractionHistory({
-      prompt: inputTemplate,
-      template: inputTemplate,
-    });
+    try {
+      const generatedData = await extractMutation.mutateAsync({
+        userPrompt: inputTemplate,
+        settings: extractionSettings
+      });
+      setResult(generatedData);
+      setEditedTemplate(generatedData.template);
 
-    if (response.isSuccess) {
-      if (user?.id) {
-        await queryClient.invalidateQueries({
-          queryKey: [ queryKeys.USER_STATS, user.id ],
-        });
-      }
-    } else {
+      await saveMutation.mutateAsync({
+        prompt: inputTemplate,
+        template: inputTemplate,
+      });
+
+      await utils.getStats.invalidate();
+
+    } catch (error) {
+      console.log(error);
     }
-    setIsGenerating(false);
   };
 
   const updateExtractionSettings = (
@@ -81,16 +78,16 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
 
           <button
             onClick={ handleExtraction }
-            disabled={ !inputTemplate || isGenerating }
+            disabled={ extractMutation.isPending || saveMutation.isPending }
             className={ cn(
               DS.button.base,
               'px-5 py-2.5 shadow-sm',
-              !inputTemplate || isGenerating
+              extractMutation.isPending || saveMutation.isPending
                 ? DS.button.loading
                 : cn(DS.button.primary, 'hover:shadow-md')
             ) }
           >
-            { isGenerating ? (
+            { extractMutation.isPending ? (
               <motion.div
                 animate={ { rotate: 360 } }
                 transition={ { duration: 1, repeat: Infinity, ease: 'linear' } }>
@@ -99,7 +96,7 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
             ) : (
               <Sparkles size={ 16 }/>
             ) }
-            { isGenerating ? 'Extraction...' : 'Improve template' }
+            { extractMutation.isPending ? 'Extraction...' : 'Improve template' }
           </button>
         </div>
       </div>

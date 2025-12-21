@@ -1,52 +1,60 @@
-import { Language } from '@/features/dashboard/types/types';
+import { z } from 'zod';
+import { LanguageSchema } from '@/features/dashboard/types/types';
 
-export const enum PromptFramework {
-  STANDARD = 'STANDARD', // Обычное улучшение (ясность + структура)
-  CO_STAR = 'CO-STAR',   // Context, Objective, Style, Tone, Audience, Response
-  RTF = 'RTF',           // Role, Task, Format
-  TAG = 'TAG',           // Task, Action, Goal
-}
+export const PromptFrameworkSchema = z.enum(['STANDARD', 'CO-STAR', 'RTF', 'TAG']);
+export type PromptFramework = z.infer<typeof PromptFrameworkSchema>;
 
-export const enum MissingInfoStrategy {
-  USE_PLACEHOLDERS = 'USE_PLACEHOLDERS',
-  INFER_CREATIVELY = 'INFER_CREATIVELY',
-  ASK_QUESTIONS = 'ASK_QUESTIONS', //ToDo
-}
+export const MissingInfoStrategySchema = z.enum([
+  'USE_PLACEHOLDERS',
+  'INFER_CREATIVELY',
+  'ASK_QUESTIONS',
+]);
+export type MissingInfoStrategy = z.infer<typeof MissingInfoStrategySchema>;
 
 export const FRAMEWORK_DISPLAY_LABELS: Record<PromptFramework, string> = {
-  [PromptFramework.STANDARD]: 'Standard Improvement',
-  [PromptFramework.CO_STAR]: 'CO-STAR (Context, Obj...)',
-  [PromptFramework.RTF]: 'RTF (Role, Task, Format)',
-  [PromptFramework.TAG]: 'TAG (Task, Action, Goal)',
+  STANDARD: 'Standard Improvement',
+  'CO-STAR': 'CO-STAR (Context, Obj...)',
+  RTF: 'RTF (Role, Task, Format)',
+  TAG: 'TAG (Task, Action, Goal)',
 };
 
 export const MISSING_INFO_DISPLAY_LABELS: Record<MissingInfoStrategy, string> = {
-  [MissingInfoStrategy.USE_PLACEHOLDERS]: 'Add Placeholders like [Data]',
-  [MissingInfoStrategy.INFER_CREATIVELY]: 'Infer Creatively',
-  [MissingInfoStrategy.ASK_QUESTIONS]: 'Ask Clarifying Questions',
+  USE_PLACEHOLDERS: 'Add Placeholders like [Data]',
+  INFER_CREATIVELY: 'Infer Creatively',
+  ASK_QUESTIONS: 'Ask Clarifying Questions',
 };
 
-export type OptimizationSettings = {
-  framework: PromptFramework;
-  missingInfo: MissingInfoStrategy;
-  language: Language;
-}
+export const OptimizationSettingsSchema = z.object({
+  framework: PromptFrameworkSchema,
+  missingInfo: MissingInfoStrategySchema,
+  language: LanguageSchema,
+});
+export type OptimizationSettings = z.infer<typeof OptimizationSettingsSchema>;
 
 export const DEFAULT_OPTIMIZER_SETTINGS: OptimizationSettings = {
-  framework: PromptFramework.STANDARD,
-  missingInfo: MissingInfoStrategy.USE_PLACEHOLDERS,
-  language: Language.MATCH_USER,
+  framework: 'STANDARD',
+  missingInfo: 'USE_PLACEHOLDERS',
+  language: 'MATCH_USER',
 };
 
-export type OptimizedPromptOutput = {
-  scores: { clarity: number, context: number };
-  optimizedPrompt: string;
-  framework?: string;
-}
+export const OptimizedPromptOutputSchema = z.object({
+  scores: z.object({
+    clarity: z.number().min(0).max(100),
+    context: z.number().min(0).max(100),
+  }),
+  optimizedPrompt: z.string(),
+  framework: PromptFrameworkSchema.optional(),
+});
+export type OptimizedPromptOutput = z.infer<typeof OptimizedPromptOutputSchema>;
 
-export type insertOptimizedPromptProps = {
-  prompt: string;
-  optimizedPrompt?: string;
-  scores?: { clarity: number, context: number };
-  settings: OptimizationSettings;
-}
+export const InsertOptimizedPromptPropsSchema = z.object({
+  prompt: z.string().min(1),
+  optimizedPrompt: z.string().optional(),
+  scores: z.object({
+    clarity: z.number(),
+    context: z.number(),
+  }).optional(),
+  settings: OptimizationSettingsSchema,
+});
+
+export type InsertOptimizedPromptProps = z.infer<typeof InsertOptimizedPromptPropsSchema>;

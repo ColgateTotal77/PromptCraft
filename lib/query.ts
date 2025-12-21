@@ -7,7 +7,3 @@ export const query = new QueryClient({
     },
   },
 });
-
-export const queryKeys = {
-  USER_STATS: 'userStats',
-}
