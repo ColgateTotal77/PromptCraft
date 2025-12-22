@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import History from '@/features/library/components/History/History';
 
 export default function Library() {
   const [activeTab, setActiveTab] = useState('history');
@@ -14,6 +15,7 @@ export default function Library() {
       </TabsList>
 
       <TabsContent value="history">
+        <History/>
       </TabsContent>
 
       <TabsContent value="templates">

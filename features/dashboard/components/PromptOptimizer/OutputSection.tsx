@@ -6,7 +6,7 @@ import { Undo2, Copy, ClipboardEditIcon, FileOutput } from 'lucide-react';
 import { DS } from '@/lib/design-system';
 import { cn } from '@/lib/utils';
 import { OptimizedPromptOutput } from '@/features/dashboard/types/optimizerTypes';
-import { ScoreCard } from '@/features/dashboard/components/PromptOptimizer/ScoreCard';
+import { ScoreCard } from '@/components/ScoreCard';
 
 interface OutputSectionProps {
   promptData: OptimizedPromptOutput;

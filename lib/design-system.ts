@@ -18,7 +18,7 @@ export const DS = {
     h1: "text-3xl font-bold tracking-tight text-gray-900",
     h4: "text-sm font-medium text-gray-900",
     h4Muted: "text-sm font-medium text-gray-500",
-    body: "text-sm text-gray-800 leading-relaxed",
+    body: "text-sm font-medium text-gray-800 leading-relaxed",
     meta: "text-xs font-medium text-gray-900",
     metaMuted: "text-xs font-medium text-gray-500",
     label: "text-xs font-medium text-gray-500 uppercase tracking-wider",
@@ -54,6 +54,7 @@ export const DS = {
   utils: {
     divider: "h-px bg-gray-200 w-full",
     dividerVertical: "h-4 w-px bg-gray-200",
+    topBorder: "pt-2 border-t border-gray-100",
     focusRing: "focus:outline-none focus:ring-1 focus:ring-gray-200",
     center: "flex items-center justify-center",
     disableable: "disabled:cursor-not-allowed disabled:opacity-50"

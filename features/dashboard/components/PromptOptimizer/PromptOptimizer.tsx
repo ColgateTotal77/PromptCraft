@@ -66,7 +66,7 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
               className={ cn(DS.input.base, DS.input.textarea, 'h-40 p-6') }
             />
 
-        <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+        <div className={ cn(DS.utils.topBorder, 'px-6 py-4 bg-gray-50/50 flex items-center justify-between') }>
           <div className="flex items-center gap-3">
             <OptimizerSettingsPopover
               optimizationSettings={ optimizationSettings }
