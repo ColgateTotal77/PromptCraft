@@ -96,6 +96,60 @@ export const appRouter = router({
       },
     };
   }),
+  getHistory: protectedProcedure
+    .input(
+      z.object({
+        cursor: z.object({
+          optimizedOffset: z.number(),
+          templateOffset: z.number(),
+        }).nullish(), // tRPC infinite queries use 'cursor'
+        limit: z.number().min(1).max(100).default(10),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit;
+      const optimizedOffset = input.cursor?.optimizedOffset ?? 0;
+      const templateOffset = input.cursor?.templateOffset ?? 0;
+      const userId = ctx.user.id;
+
+      const [optimizedRes, extractedRes] = await Promise.all([
+        ctx.supabase
+          .from('optimizedPrompts')
+          .select('id, createdAt, scores, optimizedPrompt, prompt, settings')
+          .eq('userId', userId)
+          .order('createdAt', { ascending: false })
+          .range(optimizedOffset, optimizedOffset + limit - 1),
+
+        ctx.supabase
+          .from('extractedTemplates')
+          .select('id, createdAt, isFavorite, prompt, template')
+          .eq('userId', userId)
+          .order('createdAt', { ascending: false })
+          .range(templateOffset, templateOffset + limit - 1),
+      ]);
+
+      const optimizedData = (optimizedRes.data || []).map((d) => ({
+        ...d,
+        type: 'optimized' as const,
+      }));
+
+      const templateData = (extractedRes.data || []).map((d) => ({
+        ...d,
+        type: 'template' as const,
+      }));
+
+      const combinedData = [...optimizedData, ...templateData].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      return {
+        items: combinedData,
+        nextCursor: combinedData.length > 0 ? {
+          optimizedOffset: optimizedOffset + optimizedData.length,
+          templateOffset: templateOffset + templateData.length,
+        } : undefined,
+      };
+    }),
 });
 
 export type AppRouter = typeof appRouter;

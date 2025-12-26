@@ -45,9 +45,9 @@ export const DEFAULT_EXTRACTION_SETTINGS: ExtractionSettings = {
 export const TemplateVariableSchema = z.object({
   name: z.string(),
   label: z.string(),
-  description: z.string().optional(),
+  description: z.string(),
   type: z.enum(['text', 'number', 'select', 'date']),
-  defaultValue: z.string().optional(),
+  defaultValue: z.string(),
 });
 export type TemplateVariable = z.infer<typeof TemplateVariableSchema>;
 

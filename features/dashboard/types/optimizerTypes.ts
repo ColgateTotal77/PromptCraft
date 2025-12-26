@@ -43,17 +43,17 @@ export const OptimizedPromptOutputSchema = z.object({
     context: z.number().min(0).max(100),
   }),
   optimizedPrompt: z.string(),
-  framework: PromptFrameworkSchema.optional(),
+  framework: PromptFrameworkSchema,
 });
 export type OptimizedPromptOutput = z.infer<typeof OptimizedPromptOutputSchema>;
 
 export const InsertOptimizedPromptPropsSchema = z.object({
   prompt: z.string().min(1),
-  optimizedPrompt: z.string().optional(),
+  optimizedPrompt: z.string(),
   scores: z.object({
     clarity: z.number(),
     context: z.number(),
-  }).optional(),
+  }),
   settings: OptimizationSettingsSchema,
 });
 
