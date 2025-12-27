@@ -19,7 +19,6 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
   const [ result, setResult ] = useState<null | OptimizedPromptOutput>(null);
   const [ editedPrompt, setEditedPrompt ] = useState('');
   const optimizeMutation = trpc.optimize.useMutation();
-  const saveMutation = trpc.saveOptimized.useMutation();
   const utils = trpc.useUtils();
 
   const handleImprove = async () => {
@@ -33,12 +32,6 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
 
       setResult({ ...generatedData, framework: optimizationSettings.framework });
       setEditedPrompt(generatedData.optimizedPrompt);
-
-      await saveMutation.mutateAsync({
-        originalPrompt: inputPrompt,
-        optimizedPrompt: generatedData.optimizedPrompt,
-        scores: generatedData.scores,
-      });
 
       await utils.getStats.invalidate();
 

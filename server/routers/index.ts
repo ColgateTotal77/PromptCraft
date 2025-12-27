@@ -21,23 +21,23 @@ export const appRouter = router({
         { role: 'user', content: input.userPrompt },
       ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
-      return await runOpenAIRequest('gpt-4o-mini', messages);
-    }),
+      const res = await runOpenAIRequest('gpt-4o-mini', messages);
 
-  saveOptimized: protectedProcedure
-    .input(z.object({
-      originalPrompt: z.string(),
-      optimizedPrompt: z.string(),
-      scores: z.object({ clarity: z.number(), context: z.number() }),
-    }))
-    .mutation(async ({ input, ctx }) => {
+      if (res.error) throw new Error(res.error.message);
+
       const { data, error } = await ctx.supabase
         .from('optimizedPrompts')
-        .insert([{ ...input, userId: ctx.user.id }])
+        .insert([{
+          prompt: input.userPrompt,
+          optimizedPrompt: res.optimizedPrompt,
+          scores: res.scores,
+          settings: res.settings,
+          userId: ctx.user.id
+        }])
         .select();
 
       if (error) throw new Error(error.message);
-      return { isSuccess: true, message: 'Prompt created successfully!', data };
+      return res;
     }),
 
   extract: protectedProcedure
@@ -45,29 +45,28 @@ export const appRouter = router({
       userPrompt: z.string(),
       settings: ExtractionSettingsSchema,
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const systemPrompt = buildExtractionSystemPrompt(input.settings);
       const messages = [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: input.userPrompt },
       ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
-      return await runOpenAIRequest('gpt-4o-mini', messages);
-    }),
+      const res =  await runOpenAIRequest('gpt-4o-mini', messages);
+      if (res.error) throw new Error(res.error.message);
 
-  saveExtracted: protectedProcedure
-    .input(z.object({
-      prompt: z.string(),
-      template: z.string()
-    }))
-    .mutation(async ({ input, ctx }) => {
       const { data, error } = await ctx.supabase
         .from('extractedTemplates')
-        .insert([ { ...input, userId: ctx.user.id } ])
+        .insert([{
+          prompt: input.userPrompt,
+          template: res.template,
+          userId: ctx.user.id
+        }])
         .select();
 
       if (error) throw new Error(error.message);
-      return { isSuccess: true, message: 'Template created successfully!', data };
+
+      return res;
     }),
 
   getStats: protectedProcedure.query(async ({ ctx }) => {

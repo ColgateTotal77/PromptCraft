@@ -89,14 +89,14 @@ export default function PromptHistoryItem({ props }: { props: OptimizedPromptHis
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <span className={DS.text.label}>Original</span>
-                  <div className={cn(DS.card.base, "p-4 bg-gray-50 text-gray-600 text-sm h-[180px] overflow-y-auto")}>
+                  <span className={cn(DS.text.label, "text-[10px]")}>Original</span>
+                  <div className={cn(DS.card.base, "p-4 bg-gray-50 text-gray-500 text-sm h-[200px] overflow-y-auto leading-relaxed border-dashed")}>
                     {prompt}
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <span className={DS.text.label}>Optimized Result</span>
-                  <div className={cn(DS.card.base, "p-4 border-blue-100 bg-blue-50/30 text-gray-900 text-sm h-[180px] overflow-y-auto")}>
+                  <span className={cn(DS.text.label, "text-[10px] text-indigo-600")}>Optimized Result</span>
+                  <div className={cn(DS.card.base, "p-4 border-indigo-100 bg-indigo-50/20 text-gray-900 text-sm h-[200px] overflow-y-auto font-mono leading-relaxed shadow-sm")}>
                     {optimizedPrompt}
                   </div>
                 </div>

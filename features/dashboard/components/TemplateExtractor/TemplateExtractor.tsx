@@ -22,7 +22,6 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
   const [ result, setResult ] = useState<null | ExtractedTemplateOutput>(null);
   const [ editedTemplate, setEditedTemplate ] = useState('');
   const extractMutation = trpc.extract.useMutation();
-  const saveMutation = trpc.saveExtracted.useMutation();
   const utils = trpc.useUtils();
 
   const handleExtraction = async () => {
@@ -34,11 +33,6 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
       });
       setResult(generatedData);
       setEditedTemplate(generatedData.template);
-
-      await saveMutation.mutateAsync({
-        prompt: inputTemplate,
-        template: inputTemplate,
-      });
 
       await utils.getStats.invalidate();
 
@@ -78,11 +72,11 @@ export function TemplateExtractor({ initialPrompt }: templateExtractorProps) {
 
           <button
             onClick={ handleExtraction }
-            disabled={ extractMutation.isPending || saveMutation.isPending }
+            disabled={ extractMutation.isPending }
             className={ cn(
               DS.button.base,
               'px-5 py-2.5 shadow-sm',
-              extractMutation.isPending || saveMutation.isPending
+              extractMutation.isPending
                 ? DS.button.loading
                 : cn(DS.button.primary, 'hover:shadow-md')
             ) }
