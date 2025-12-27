@@ -31,7 +31,7 @@ export const appRouter = router({
           prompt: input.userPrompt,
           optimizedPrompt: res.optimizedPrompt,
           scores: res.scores,
-          settings: res.settings,
+          settings: input.settings,
           userId: ctx.user.id
         }])
         .select();
@@ -148,6 +148,32 @@ export const appRouter = router({
           templateOffset: templateOffset + templateData.length,
         } : undefined,
       };
+    }),
+  updateFavorite: protectedProcedure
+    .input(z.object({
+      id: z.string(),
+      isFavorite: z.boolean(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { data, error } = await ctx.supabase
+        .from('extractedTemplates')
+        .update({ isFavorite: input.isFavorite })
+        .eq('id', input.id)
+        .eq('userId', ctx.user.id)
+        .select();
+
+      if (error) {
+        console.error("Supabase Error:", error);
+        throw new Error(error.message);
+      }
+
+      console.log("Updated Data:", data);
+
+      if (!data || data.length === 0) {
+        console.warn("No rows were updated. Check RLS or IDs.");
+      }
+
+      return true;
     }),
 });
 

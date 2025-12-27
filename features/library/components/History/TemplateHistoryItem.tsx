@@ -8,18 +8,54 @@ import {
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import { ExtractedTemplateHistoryProps } from '@/features/library/components/History/HistoryItem';
+import { trpc } from '@/lib/trpc';
 
 export default function TemplateHistoryItem({ props }: { props: ExtractedTemplateHistoryProps }) {
   const { id, prompt, template, type, createdAt, isFavorite } = props;
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const utils = trpc.useUtils();
+
+  const favoriteMutation = trpc.updateFavorite.useMutation({
+    onMutate: async ({ id, isFavorite: newFavoriteStatus }) => {
+      await utils.getHistory.cancel();
+
+      const previousData = utils.getHistory.getInfiniteData({ limit: 10 });
+
+      utils.getHistory.setInfiniteData({ limit: 10 }, (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.map((item) =>
+              item.id === id ? { ...item, isFavorite: newFavoriteStatus } : item
+            ),
+          })),
+        };
+      });
+
+      return { previousData };
+    },
+    onError: (err, newVar, context) => {
+      utils.getHistory.setInfiniteData({ limit: 10 }, context?.previousData);
+    },
+    onSettled: () => {
+      utils.getHistory.invalidate();
+    },
+  });
+
+  const onFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    favoriteMutation.mutate({
+      id,
+      isFavorite: !isFavorite,
+    });
+  };
+
   const onCopy = async () => {
     await navigator.clipboard.writeText(template);
   };
-
-  const onFavorite = async () => {
-    console.log(id)
-  }
 
   return (
     <div className={cn(
@@ -47,11 +83,20 @@ export default function TemplateHistoryItem({ props }: { props: ExtractedTemplat
           </div>
         </div>
 
-        <button
-          className="flex items-center gap-3"
-          onClick={onFavorite}
-        >
-          {<Star size={14} className={ `fill-${isFavorite ? 'indigo-500' : 'white'} text-indigo-500` } />}
+        <div className="flex items-center gap-3">
+          <button
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={onFavorite}
+          >
+            <Star
+              size={14}
+              className={cn(
+                "text-indigo-500 transition-colors",
+                isFavorite ? "fill-indigo-500" : "fill-white"
+              )}
+            />
+          </button>
+
           <motion.div
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
@@ -59,7 +104,9 @@ export default function TemplateHistoryItem({ props }: { props: ExtractedTemplat
           >
             <ChevronDown size={18} />
           </motion.div>
-        </button>
+        </div>
+
+
       </div>
 
       <AnimatePresence>
