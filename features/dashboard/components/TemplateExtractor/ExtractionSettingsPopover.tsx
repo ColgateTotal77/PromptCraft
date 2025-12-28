@@ -11,7 +11,7 @@ import {
   ExtractionSettings,
   SYNTAX_DISPLAY_LABELS, GENERALIZATION_DISPLAY_LABELS
 } from '@/features/dashboard/types/extractorTypes';
-import { Language, LANGUAGE_LABELS } from '@/features/dashboard/types/types';
+import { Language, LANGUAGE_DETAILS } from '@/features/dashboard/types/types';
 
 interface ExtractionSettingsProps {
   extractionSettings: ExtractionSettings;
@@ -71,7 +71,7 @@ export function ExtractionSettingsPopover({ extractionSettings, updateExtraction
           <div className="space-y-2">
             <label className={ DS.text.label }>Language</label>
             <div className="flex bg-gray-100 p-0.5 rounded-md">
-              { Object.entries(LANGUAGE_LABELS).map(([ key, label ]) => (
+              { Object.entries(LANGUAGE_DETAILS).map(([ key, { label } ]) => (
                 <button
                   key={ key }
                   onClick={ () => handleLanguageChange(key as Language) }

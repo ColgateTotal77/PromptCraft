@@ -6,12 +6,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import {
-  FRAMEWORK_DISPLAY_LABELS, MISSING_INFO_DISPLAY_LABELS,
-  MissingInfoStrategy,
+  FRAMEWORK_DETAILS,
+
   OptimizationSettings,
   PromptFramework
 } from '@/features/dashboard/types/optimizerTypes';
-import { Language, LANGUAGE_LABELS } from '@/features/dashboard/types/types';
+import { Language, LANGUAGE_DETAILS, SettingDetail } from '@/features/dashboard/types/types';
 
 interface OptimizerSettingsProps {
   optimizationSettings: OptimizationSettings;
@@ -19,22 +19,18 @@ interface OptimizerSettingsProps {
 }
 
 export function OptimizerSettingsPopover({ optimizationSettings, updateOptimizationSettings }: OptimizerSettingsProps) {
-  const { framework, language, missingInfo } = optimizationSettings;
+  const { framework, language } = optimizationSettings;
 
   const handleFrameworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateOptimizationSettings({ framework: e.target.value as PromptFramework });
-  };
-
-  const handleMissingInfoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateOptimizationSettings({ missingInfo: e.target.value as MissingInfoStrategy });
   };
 
   const handleLanguageChange = (newLang: Language) => {
     updateOptimizationSettings({ language: newLang });
   };
 
-  const getOptions = <TEnum extends Record<string, string>>(enumObject: TEnum) => {
-    return Object.entries(enumObject).map(([ key, label ]) => (
+  const getOptions = <T extends Record<string, SettingDetail>>(enumObject: T) => {
+    return Object.entries(enumObject).map(([ key, { label } ]) => (
       <option key={ key } value={ key }>
         { label }
       </option>
@@ -64,14 +60,14 @@ export function OptimizerSettingsPopover({ optimizationSettings, updateOptimizat
               onChange={ handleFrameworkChange }
               className={ cn(DS.utils.focusRing, DS.text.h4, 'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5') }
             >
-              { getOptions(FRAMEWORK_DISPLAY_LABELS) }
+              { getOptions(FRAMEWORK_DETAILS) }
             </select>
           </div>
 
           <div className="space-y-2">
             <label className={ DS.text.label }>Language</label>
             <div className="flex bg-gray-100 p-0.5 rounded-md">
-              { Object.entries(LANGUAGE_LABELS).map(([ key, label ]) => (
+              { Object.entries(LANGUAGE_DETAILS).map(([ key, { label } ]) => (
                 <button
                   key={ key }
                   onClick={ () => handleLanguageChange(key as Language) }
@@ -86,21 +82,6 @@ export function OptimizerSettingsPopover({ optimizationSettings, updateOptimizat
                 </button>
               )) }
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className={ DS.text.label }>Missing Info</label>
-            <select
-              value={ missingInfo }
-              onChange={ handleMissingInfoChange }
-              className={ cn(
-                DS.utils.focusRing,
-                DS.text.h4,
-                'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5'
-              ) }
-            >
-              { getOptions(MISSING_INFO_DISPLAY_LABELS) }
-            </select>
           </div>
         </div>
       </PopoverContent>

@@ -21,7 +21,7 @@ export function ScoreCard({ label, score, colorClass }: ScoreCardProps) {
           />
           <path
             className={ cn('text-gray-900 transition-all duration-1000 ease-out', colorClass) }
-            strokeDasharray={ `${ score * 10 }, 100` }
+            strokeDasharray={ `${ score * 100 }, 100` }
             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
             fill="none"
             stroke="currentColor"

@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Settings2, Globe, LayoutTemplate, Code2 } from 'lucide-react';
+import { ChevronDown, Globe, LayoutTemplate, Code2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
-import { OptimizedPromptHistoryProps } from '@/features/library/components/History/HistoryItem';
 import { ScoreCard } from '@/components/ScoreCard';
-import { FRAMEWORK_DISPLAY_LABELS, MISSING_INFO_DISPLAY_LABELS } from '@/features/dashboard/types/optimizerTypes';
-import { LANGUAGE_LABELS } from '@/features/dashboard/types/types';
+import { FRAMEWORK_DETAILS, OptimizedPromptHistoryProps } from '@/features/dashboard/types/optimizerTypes';
+import { LANGUAGE_DETAILS } from '@/features/dashboard/types/types';
 
 export default function PromptHistoryItem({ props }: { props: OptimizedPromptHistoryProps }) {
   const { type, prompt, optimizedPrompt, scores, settings, createdAt } = props;
@@ -72,17 +71,12 @@ export default function PromptHistoryItem({ props }: { props: OptimizedPromptHis
                   <div className="flex items-center gap-2">
                     <LayoutTemplate size={14} className="text-gray-400" />
                     <span className={DS.text.label}>Framework:</span>
-                    <span className={DS.text.meta}>{FRAMEWORK_DISPLAY_LABELS[settings.framework]}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Settings2 size={14} className="text-gray-400" />
-                    <span className={DS.text.label}>Strategy:</span>
-                    <span className={DS.text.meta}>{MISSING_INFO_DISPLAY_LABELS[settings.missingInfo]}</span>
+                    <span className={DS.text.meta}>{FRAMEWORK_DETAILS[settings.framework].label}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Globe size={14} className="text-gray-400" />
                     <span className={DS.text.label}>Lang:</span>
-                    <span className={DS.text.meta}>{LANGUAGE_LABELS[settings.language]}</span>
+                    <span className={DS.text.meta}>{LANGUAGE_DETAILS[settings.language].label}</span>
                   </div>
                 </div>
               </div>

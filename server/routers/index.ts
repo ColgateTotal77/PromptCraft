@@ -4,31 +4,36 @@ import { runOpenAIRequest } from '@/lib/openai';
 import { buildOptimizationSystemPrompt } from '@/features/dashboard/utils/buildOptimizationSystemPrompt';
 import { buildExtractionSystemPrompt } from '@/features/dashboard/utils/buildExtractionSystemPrompt';
 import OpenAI from 'openai';
-import { OptimizationSettingsSchema } from '@/features/dashboard/types/optimizerTypes';
+import { OptimizationSettingsSchema, OptimizedPromptOutputSchema } from '@/features/dashboard/types/optimizerTypes';
 import { ExtractionSettingsSchema } from '@/features/dashboard/types/extractorTypes';
 import { LIMITS } from '@/lib/constants';
 
 export const appRouter = router({
   optimize: protectedProcedure
     .input(z.object({
-      userPrompt: z.string(),
+      prompt: z.string(),
       settings: OptimizationSettingsSchema,
     }))
+    .output(OptimizedPromptOutputSchema)
     .mutation(async ({ input, ctx }) => {
       const systemPrompt = buildOptimizationSystemPrompt(input.settings);
       const messages = [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: input.userPrompt },
+        { role: 'user', content: input.prompt },
       ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
       const res = await runOpenAIRequest('gpt-4o-mini', messages);
 
       if (res.error) throw new Error(res.error.message);
 
+      console.log("systemPrompt: ", systemPrompt)
+      console.log("_____________________")
+      console.log("res: ", JSON.stringify(res, null, 2));
+
       const { data, error } = await ctx.supabase
         .from('optimizedPrompts')
         .insert([{
-          prompt: input.userPrompt,
+          prompt: input.prompt,
           optimizedPrompt: res.optimizedPrompt,
           scores: res.scores,
           settings: input.settings,

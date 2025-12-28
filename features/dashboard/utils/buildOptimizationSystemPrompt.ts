@@ -1,85 +1,65 @@
 import { OptimizationSettings, PromptFramework } from '@/features/dashboard/types/optimizerTypes';
 
-export function buildOptimizationSystemPrompt(
-  settings: OptimizationSettings
-): string {
-  const { framework, missingInfo, language } = settings;
+export function buildOptimizationSystemPrompt(settings: OptimizationSettings): string {
+  const { framework, language } = settings;
 
-  const frameworkInstructions: Record<PromptFramework, string> = {
-    STANDARD: `
-      - Structure the prompt with clear headers (###).
-      - Ensure the task is separated from the context.
-      - Add "Step-by-Step" instructions if logic is complex.
-    `,
+  const frameworkDescriptions: Record<PromptFramework, string> = {
+    MODULAR: `
+      - Use 'Modular Framework':
+      - ### Role: Define who the AI is and its expertise.
+      - ### Context: Background information and why this task exists.
+      - ### Task: Clear, step-by-step action statement.
+      - ### Constraints: Limits, rules, tone, and "don'ts".
+      - ### Output: Specific format and structure of the result.`,
     'CO-STAR': `
-      - REWRITE the prompt strictly following the CO-STAR framework:
-      - (C) Context: Background info.
-      - (O) Objective: What is the task?
-      - (S) Style: Writing style (e.g. academic, witty).
-      - (T) Tone: Emotional tone.
-      - (A) Audience: Who is this for?
-      - (R) Response: Format constraints.
-    `,
+      - REWRITE the prompt strictly using the CO-STAR framework.
+      - USE explicit headers for each section: (C) Context, (O) Objective, (S) Style, (T) Tone, (A) Audience, (R) Response.
+      - DO NOT write it as a single paragraph.`,
     RTF: `
-      - REWRITE the prompt using the RTF framework:
-      - [R] Role: Who is the AI?
-      - [T] Task: What exactly must be done?
-      - [F] Format: How should the output look?
-    `,
+      - Use strictly this structure:
+      - ### Role: Define the expert persona the AI should adopt.
+      - ### Task: The specific action or instruction to execute.
+      - ### Format: The layout and style of the final answer.`,
     TAG: `
-      - Use the TAG framework: Task, Action, Goal.
-    `
+      - Use strictly this structure:
+      - ### Task: Define the main instruction.
+      - ### Action: Specific steps or the process to follow.
+      - ### Goal: The intended outcome or success criteria.`
   };
 
-  const placeholderLogic = missingInfo === 'USE_PLACEHOLDERS'
-    ? `CRITICAL: If the user input lacks specific details (like Role, Target Audience, or Context), DO NOT hallucinate or invent them. Instead, insert clear placeholders in []`
-    : `If details are missing, creatively infer the most likely context based on the task to make the prompt ready-to-use.`;
-
-  const langLogic = language === 'MATCH_USER'
-    ? `
-      CRITICAL LANGUAGE RULE:
-      - Detect user's input language.
-      - The ENTIRE output (headers, lists, placeholders) MUST be in that language.`
-    : `Translate and optimize the prompt into English.`;
+  const langInstruction = language === 'MATCH_USER'
+    ? "Detect user's language. Use ONLY that language for ALL text in the JSON (labels, analysis, etc)."
+    : "Output EVERYTHING in English regardless of input language.";
 
   return `
 ### ROLE
-You are an Expert AI Prompt Engineer specializing in prompt architecture and optimization.
+You are a Senior Prompt Engineer. Your goal is to optimize raw user inputs into high-performing prompts and extract dynamic variables to create a flexible template.
 
-### TASK
-Analyze the user's raw prompt, calculate quality scores, and rewrite it into a superior version based on the specific rules below.
+### OBJECTIVE
+1. Rewrite the prompt using the "${framework}" framework.
+2. Evaluate the ORIGINAL prompt's clarity and context (0-100).
+3. Identify 2-8 key parameters (variables) in the prompt and provide a pool of 3 alternative values for each.
 
-### CONFIGURATION
-1. **Framework**: ${framework}
-   ${frameworkInstructions[framework || 'STANDARD']}
+### FRAMEWORK INSTRUCTIONS
+${frameworkDescriptions[framework]}
 
-2. **Missing Info**:
-   ${placeholderLogic}
+### VARIABLE EXTRACTION RULES
+- Find keywords that define the scope (e.g., a specific programming language, a target audience, a tone of voice).
+- For each keyword, create a 'label' (category name) and 'options' (3 logical alternatives).
+- Example: If the prompt is about "Python", options could be ["JavaScript", "Go", "Rust"].
 
-3. **Language**:
-   ${langLogic}
-
-### SCORING METRICS (0-10 Scale)
-Evaluate the *original* prompt:
-1. **Clarity**: How precise is the intent? (10 = Crystal clear, 0 = Vague).
-2. **Context**: Is there enough background info? (10 = Rich context, 0 = None).
+### LANGUAGE RULE
+${langInstruction}
 
 ### OUTPUT FORMAT
-Return ONLY a valid JSON object. No markdown. No conversational filler.
-
-Schema:
+Return ONLY valid JSON. No markdown, no prose.
 {
-  "scores": {
-    "clarity": number,
-    "context": number
-  },
-  "optimizedPrompt": "The rewritten prompt string using the ${framework} framework"
+  "scores": { "clarity": number, "context": number},
+  "analysis": "Brief explanation of improvements",
+  "optimizedPrompt": "The full structured prompt",
+  "variables": [
+    { "phrase": "exact text from optimized prompt", "options": ["alt1", "alt2", "alt3"] }
+  ],
 }
-  `.trim();
+`.trim();
 }
-
-
-// ### CRITICAL STYLE RULES (MUST FOLLOW)
-// 1. **Imperative Mood**: Use direct commands (e.g., "Write", "Analyze", "Create").
-// 2. **No Fluff**: Remove conversational fillers ("Hello", "Please", "Can you").
-// 3. **Objective Tone**: Transform personal requests into parameters.
