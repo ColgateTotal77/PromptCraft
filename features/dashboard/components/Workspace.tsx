@@ -10,7 +10,7 @@ export default function Workspace() {
   const [extractorData, setExtractorData] = useState<string>('');
 
   const handleTransferToExtractor = (prompt?: string) => {
-    if(prompt) {
+    if (prompt) {
       setExtractorData(prompt);
     }
     setActiveTab('extractor');

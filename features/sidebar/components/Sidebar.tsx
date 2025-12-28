@@ -10,14 +10,21 @@ export function Sidebar() {
     <aside className="flex flex-col justify-between w-[250px] h-full border-r border-gray-200 bg-gray-50 shrink-0">
       <div className="flex flex-col gap-8 p-6">
         <div className="flex items-center gap-2">
-          <div className={ cn(DS.utils.center, 'w-8 h-8 bg-gray-900 rounded-lg text-white shadow-sm') }>
-            <Command size={ 18 }/>
+          <div
+            className={cn(
+              DS.utils.center,
+              'w-8 h-8 bg-gray-900 rounded-lg text-white shadow-sm'
+            )}
+          >
+            <Command size={18} />
           </div>
-          <span className="font-bold text-gray-900 text-lg tracking-tight">PromptCraft</span>
+          <span className="font-bold text-gray-900 text-lg tracking-tight">
+            PromptCraft
+          </span>
         </div>
-        <SidebarNav/>
+        <SidebarNav />
       </div>
-      <UserBlock/>
+      <UserBlock />
     </aside>
   );
 }

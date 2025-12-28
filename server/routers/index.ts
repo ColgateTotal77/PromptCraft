@@ -4,36 +4,57 @@ import { runOpenAIRequest } from '@/lib/openai';
 import { buildOptimizationSystemPrompt } from '@/features/dashboard/utils/buildOptimizationSystemPrompt';
 import { buildExtractionSystemPrompt } from '@/features/dashboard/utils/buildExtractionSystemPrompt';
 import OpenAI from 'openai';
-import { OptimizationSettingsSchema } from '@/features/dashboard/types/optimizerTypes';
+import {
+  OptimizationSettingsSchema,
+  OptimizedPromptOutputSchema,
+} from '@/features/dashboard/types/optimizerTypes';
 import { ExtractionSettingsSchema } from '@/features/dashboard/types/extractorTypes';
 import { LIMITS } from '@/lib/constants';
 
 export const appRouter = router({
   optimize: protectedProcedure
-    .input(z.object({
-      userPrompt: z.string(),
-      settings: OptimizationSettingsSchema,
-    }))
+    .input(
+      z.object({
+        prompt: z.string(),
+        settings: OptimizationSettingsSchema,
+      })
+    )
+    .output(OptimizedPromptOutputSchema)
     .mutation(async ({ input, ctx }) => {
       const systemPrompt = buildOptimizationSystemPrompt(input.settings);
       const messages = [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: input.userPrompt },
+        { role: 'user', content: input.prompt },
       ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
       const res = await runOpenAIRequest('gpt-4o-mini', messages);
 
       if (res.error) throw new Error(res.error.message);
 
+      console.log('systemPrompt: ', systemPrompt);
+      console.log('_____________________');
+      console.log('res: ', JSON.stringify(res, null, 2));
+
+      res.optimizedPrompt = res.optimizedPrompt.replace(
+        /(?<!^|[\n\r])###\s*(?!\n)/gm,
+        '\n### '
+      );
+
+      for (const variable of res.variables) {
+        variable.options.push(variable.phrase);
+      }
+
       const { data, error } = await ctx.supabase
         .from('optimizedPrompts')
-        .insert([{
-          prompt: input.userPrompt,
-          optimizedPrompt: res.optimizedPrompt,
-          scores: res.scores,
-          settings: input.settings,
-          userId: ctx.user.id
-        }])
+        .insert([
+          {
+            prompt: input.prompt,
+            optimizedPrompt: res.optimizedPrompt,
+            scores: res.scores,
+            settings: input.settings,
+            userId: ctx.user.id,
+          },
+        ])
         .select();
 
       if (error) throw new Error(error.message);
@@ -41,10 +62,12 @@ export const appRouter = router({
     }),
 
   extract: protectedProcedure
-    .input(z.object({
-      userPrompt: z.string(),
-      settings: ExtractionSettingsSchema,
-    }))
+    .input(
+      z.object({
+        userPrompt: z.string(),
+        settings: ExtractionSettingsSchema,
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const systemPrompt = buildExtractionSystemPrompt(input.settings);
       const messages = [
@@ -52,16 +75,18 @@ export const appRouter = router({
         { role: 'user', content: input.userPrompt },
       ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
-      const res =  await runOpenAIRequest('gpt-4o-mini', messages);
+      const res = await runOpenAIRequest('gpt-4o-mini', messages);
       if (res.error) throw new Error(res.error.message);
 
       const { data, error } = await ctx.supabase
         .from('extractedTemplates')
-        .insert([{
-          prompt: input.userPrompt,
-          template: res.template,
-          userId: ctx.user.id
-        }])
+        .insert([
+          {
+            prompt: input.userPrompt,
+            template: res.template,
+            userId: ctx.user.id,
+          },
+        ])
         .select();
 
       if (error) throw new Error(error.message);
@@ -73,12 +98,30 @@ export const appRouter = router({
     const userId = ctx.user.id;
     const toDay = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
 
-    const [profileRes, subRes, improverUsage, extractorUsage] = await Promise.all([
-      ctx.supabase.from('profiles').select('username, avatarUrl, email').eq('id', userId).single(),
-      ctx.supabase.from('subscriptions').select('status').eq('userId', userId).in('status', ['active']).maybeSingle(),
-      ctx.supabase.from('optimizedPrompts').select('*', { count: 'exact', head: true }).eq('userId', userId).gte('createdAt', toDay),
-      ctx.supabase.from('extractedTemplates').select('*', { count: 'exact', head: true }).eq('userId', userId).gte('createdAt', toDay),
-    ]);
+    const [profileRes, subRes, improverUsage, extractorUsage] =
+      await Promise.all([
+        ctx.supabase
+          .from('profiles')
+          .select('username, avatarUrl, email')
+          .eq('id', userId)
+          .single(),
+        ctx.supabase
+          .from('subscriptions')
+          .select('status')
+          .eq('userId', userId)
+          .in('status', ['active'])
+          .maybeSingle(),
+        ctx.supabase
+          .from('optimizedPrompts')
+          .select('*', { count: 'exact', head: true })
+          .eq('userId', userId)
+          .gte('createdAt', toDay),
+        ctx.supabase
+          .from('extractedTemplates')
+          .select('*', { count: 'exact', head: true })
+          .eq('userId', userId)
+          .gte('createdAt', toDay),
+      ]);
 
     const isPro = !!subRes.data;
     const limit = isPro ? LIMITS.PRO : LIMITS.FREE;
@@ -98,10 +141,12 @@ export const appRouter = router({
   getHistory: protectedProcedure
     .input(
       z.object({
-        cursor: z.object({
-          optimizedOffset: z.number(),
-          templateOffset: z.number(),
-        }).nullish(), // tRPC infinite queries use 'cursor'
+        cursor: z
+          .object({
+            optimizedOffset: z.number(),
+            templateOffset: z.number(),
+          })
+          .nullish(), // tRPC infinite queries use 'cursor'
         limit: z.number().min(1).max(100).default(10),
       })
     )
@@ -138,22 +183,28 @@ export const appRouter = router({
       }));
 
       const combinedData = [...optimizedData, ...templateData].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
       return {
         items: combinedData,
-        nextCursor: combinedData.length > 0 ? {
-          optimizedOffset: optimizedOffset + optimizedData.length,
-          templateOffset: templateOffset + templateData.length,
-        } : undefined,
+        nextCursor:
+          combinedData.length > 0
+            ? {
+                optimizedOffset: optimizedOffset + optimizedData.length,
+                templateOffset: templateOffset + templateData.length,
+              }
+            : undefined,
       };
     }),
   updateFavorite: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      isFavorite: z.boolean(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        isFavorite: z.boolean(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const { data, error } = await ctx.supabase
         .from('extractedTemplates')
@@ -163,14 +214,14 @@ export const appRouter = router({
         .select();
 
       if (error) {
-        console.error("Supabase Error:", error);
+        console.error('Supabase Error:', error);
         throw new Error(error.message);
       }
 
-      console.log("Updated Data:", data);
+      console.log('Updated Data:', data);
 
       if (!data || data.length === 0) {
-        console.warn("No rows were updated. Check RLS or IDs.");
+        console.warn('No rows were updated. Check RLS or IDs.');
       }
 
       return true;

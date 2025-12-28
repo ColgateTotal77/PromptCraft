@@ -1,0 +1,21 @@
+module.exports = {
+  plugins: [],
+  arrowParens: 'always',
+  bracketSpacing: true,
+  embeddedLanguageFormatting: 'auto',
+  endOfLine: 'lf',
+  quoteProps: 'consistent',
+  semi: true,
+  singleQuote: true,
+  tabWidth: 2,
+  trailingComma: 'es5',
+  useTabs: false,
+  maxLength: 120,
+  importOrder: [],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
+  importOrderParserPlugins: [
+    'typescript',
+    '["decorators-legacy", { "decoratorsBeforeExport": true }]',
+  ],
+};

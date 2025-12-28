@@ -1,9 +1,12 @@
-import { ExtractionSettings, GeneralizationLevel, TemplateSyntax } from '@/features/dashboard/types/extractorTypes';
+import {
+  ExtractionSettings,
+  GeneralizationLevel,
+  TemplateSyntax,
+} from '@/features/dashboard/types/extractorTypes';
 
 export function buildExtractionSystemPrompt(
   settings: ExtractionSettings
 ): string {
-
   const { syntax, level, language } = settings;
 
   const syntaxInstructions: Record<TemplateSyntax, string> = {
@@ -47,13 +50,14 @@ export function buildExtractionSystemPrompt(
     `,
   };
 
-  const langLogic = language === 'MATCH_USER'
-    ? `
+  const langLogic =
+    language === 'MATCH_USER'
+      ? `
       CRITICAL LANGUAGE RULE:
       - Detect the language of the USER'S INPUT.
       - The 'template' text, 'title', 'description', and variable 'labels' MUST be in that language.
       - Variable 'names' (ids) should remain English/ASCII (e.g., {{user_name}}) for code compatibility.`
-    : `
+      : `
       - Translate the template content, title, and descriptions into English.
       - Variable names must be in English.`;
 

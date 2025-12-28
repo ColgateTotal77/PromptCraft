@@ -3,22 +3,17 @@ import HistoryItem from '@/features/library/components/History/HistoryItem';
 import { Loading } from '@/components/ui/loading';
 
 export default function History() {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading
-  } = trpc.getHistory.useInfiniteQuery(
-    { limit: 10 },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  );
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    trpc.getHistory.useInfiniteQuery(
+      { limit: 10 },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+      }
+    );
 
   const allItems = data?.pages.flatMap((page) => page.items) ?? [];
 
-  if (isLoading) return <Loading/>;
+  if (isLoading) return <Loading />;
 
   return (
     <div className="flex flex-col gap-4">
@@ -37,7 +32,9 @@ export default function History() {
       )}
 
       {!hasNextPage && allItems.length > 0 && (
-        <p className="text-center text-gray-500 text-sm">No more history to show.</p>
+        <p className="text-center text-gray-500 text-sm">
+          No more history to show.
+        </p>
       )}
     </div>
   );

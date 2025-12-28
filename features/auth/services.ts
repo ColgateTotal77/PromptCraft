@@ -6,8 +6,8 @@ export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${ window.location.origin }/auth/callback`
-    }
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
   });
 
   if (error) console.error(error);
@@ -18,8 +18,8 @@ export async function signInWithGithub() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'github',
     options: {
-      redirectTo: `${ window.location.origin }/auth/callback`
-    }
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
   });
 
   if (error) console.error(error);

@@ -4,7 +4,9 @@ import { createSupabase } from '@/lib/supabaseServer';
 export const createContext = async () => {
   const supabase = await createSupabase();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return {
     supabase,

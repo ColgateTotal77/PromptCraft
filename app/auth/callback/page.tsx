@@ -12,7 +12,7 @@ export default function AuthCallback() {
     supabase.auth.getSession().then(() => {
       router.push('/');
     });
-  }, [ router ]);
+  }, [router]);
 
-  return <Loading/>;
+  return <Loading />;
 }

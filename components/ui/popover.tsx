@@ -6,7 +6,9 @@ import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 
-const PopoverContext = React.createContext<{ open: boolean; setOpen: (open: boolean) => void } | undefined>(undefined);
+const PopoverContext = React.createContext<
+  { open: boolean; setOpen: (open: boolean) => void } | undefined
+>(undefined);
 
 const usePopover = () => {
   const context = React.useContext(PopoverContext);
@@ -14,13 +16,16 @@ const usePopover = () => {
   return context;
 };
 
-export const Popover = ({ children, ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) => {
-  const [ open, setOpen ] = React.useState(props.open || false);
+export const Popover = ({
+  children,
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Root>) => {
+  const [open, setOpen] = React.useState(props.open || false);
 
   return (
-    <PopoverPrimitive.Root open={ open } onOpenChange={ setOpen } { ...props }>
-      <PopoverContext.Provider value={ { open, setOpen } }>
-        { children }
+    <PopoverPrimitive.Root open={open} onOpenChange={setOpen} {...props}>
+      <PopoverContext.Provider value={{ open, setOpen }}>
+        {children}
       </PopoverContext.Provider>
     </PopoverPrimitive.Root>
   );
@@ -36,26 +41,25 @@ export const PopoverContent = React.forwardRef<
 
   return (
     <AnimatePresence>
-      { open && (
+      {open && (
         <PopoverPrimitive.Portal forceMount>
-          <PopoverPrimitive.Content align={ align } sideOffset={ sideOffset } asChild>
+          <PopoverPrimitive.Content
+            align={align}
+            sideOffset={sideOffset}
+            asChild
+          >
             <motion.div
-              ref={ ref }
-              initial={ { opacity: 0, scale: 0.95 } }
-              animate={ { opacity: 1, scale: 1 } }
-              exit={ { opacity: 0, scale: 0.95 } }
-              transition={ { duration: 0.2, ease: 'easeInOut' } }
-              className={ cn(
-                DS.card.base,
-                DS.card.floating,
-                'w-72',
-                className
-              ) }
-              { ...(props as HTMLMotionProps<'div'>) }
+              ref={ref}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className={cn(DS.card.base, DS.card.floating, 'w-72', className)}
+              {...(props as HTMLMotionProps<'div'>)}
             />
           </PopoverPrimitive.Content>
         </PopoverPrimitive.Portal>
-      ) }
+      )}
     </AnimatePresence>
   );
 });

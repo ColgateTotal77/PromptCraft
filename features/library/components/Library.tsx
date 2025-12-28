@@ -15,11 +15,10 @@ export default function Library() {
       </TabsList>
 
       <TabsContent value="history">
-        <History/>
+        <History />
       </TabsContent>
 
-      <TabsContent value="templates">
-      </TabsContent>
+      <TabsContent value="templates"></TabsContent>
     </Tabs>
   );
 }

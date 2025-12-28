@@ -23,7 +23,10 @@ export const SYNTAX_DISPLAY_LABELS: Record<TemplateSyntax, string> = {
   ANGLE_BRACKETS: 'Angle Brackets <Data>',
 };
 
-export const GENERALIZATION_DISPLAY_LABELS: Record<GeneralizationLevel, string> = {
+export const GENERALIZATION_DISPLAY_LABELS: Record<
+  GeneralizationLevel,
+  string
+> = {
   CONSERVATIVE: 'Conservative (Entities only)',
   BALANCED: 'Balanced (Recommended)',
   AGGRESSIVE: 'Aggressive (Abstract Framework)',
@@ -57,10 +60,14 @@ export const ExtractedTemplateOutputSchema = z.object({
   title: z.string(),
   description: z.string(),
 });
-export type ExtractedTemplateOutput = z.infer<typeof ExtractedTemplateOutputSchema>;
+export type ExtractedTemplateOutput = z.infer<
+  typeof ExtractedTemplateOutputSchema
+>;
 
 export const InsertExtractedTemplatePropsSchema = z.object({
   prompt: z.string().min(1),
   template: z.string().min(1),
 });
-export type InsertExtractedTemplateProps = z.infer<typeof InsertExtractedTemplatePropsSchema>;
+export type InsertExtractedTemplateProps = z.infer<
+  typeof InsertExtractedTemplatePropsSchema
+>;

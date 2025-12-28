@@ -5,8 +5,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 import { OutputSection } from '@/features/dashboard/components/PromptOptimizer/OutputSection';
 import React, { useState } from 'react';
-import { DEFAULT_OPTIMIZER_SETTINGS, OptimizationSettings, OptimizedPromptOutput } from '@/features/dashboard/types/optimizerTypes';
-import { TemplateSettingsPopover } from '@/features/dashboard/components/PromptOptimizer/TemplateSettingsPopover';
+import {
+  DEFAULT_OPTIMIZER_SETTINGS,
+  OptimizationSettings,
+  OptimizedPromptOutput,
+} from '@/features/dashboard/types/optimizerTypes';
 import { trpc } from '@/lib/trpc';
 
 interface PromptOptimizerProps {
@@ -14,27 +17,28 @@ interface PromptOptimizerProps {
 }
 
 export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
-  const [ inputPrompt, setInputPrompt ] = useState('');
-  const [ optimizationSettings, setOptimizationSettings ] = useState<OptimizationSettings>(DEFAULT_OPTIMIZER_SETTINGS);
-  const [ result, setResult ] = useState<null | OptimizedPromptOutput>(null);
-  const [ editedPrompt, setEditedPrompt ] = useState('');
+  const [prompt, setPrompt] = useState('');
+  const [settings, setSettings] = useState<OptimizationSettings>(
+    DEFAULT_OPTIMIZER_SETTINGS
+  );
+  const [result, setResult] = useState<null | OptimizedPromptOutput>(null);
+  const [editedPrompt, setEditedPrompt] = useState('');
   const optimizeMutation = trpc.optimize.useMutation();
   const utils = trpc.useUtils();
 
   const handleImprove = async () => {
-    if (!inputPrompt.trim()) return;
+    if (!prompt.trim()) return;
 
     try {
       const generatedData = await optimizeMutation.mutateAsync({
-        userPrompt: inputPrompt,
-        settings: optimizationSettings,
+        prompt,
+        settings,
       });
 
-      setResult({ ...generatedData, framework: optimizationSettings.framework });
+      setResult({ ...generatedData, framework: settings.framework });
       setEditedPrompt(generatedData.optimizedPrompt);
 
       await utils.getStats.invalidate();
-
     } catch (error) {
       console.log(error);
     }
@@ -43,7 +47,7 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
   const updateOptimizationSettings = (
     updates: Partial<OptimizationSettings>
   ) => {
-    setOptimizationSettings(prevSettings => ({
+    setSettings((prevSettings) => ({
       ...prevSettings,
       ...updates,
     }));
@@ -51,63 +55,65 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
 
   return (
     <>
-      <div className={ cn(DS.card.base, DS.input.wrapper, 'overflow-hidden') }>
-            <textarea
-              value={ inputPrompt }
-              onChange={ (e) => setInputPrompt(e.target.value) }
-              placeholder="Paste your rough idea here..."
-              className={ cn(DS.input.base, DS.input.textarea, 'h-40 p-6') }
-            />
+      <div className={cn(DS.card.base, DS.input.wrapper, 'overflow-hidden')}>
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Paste your rough idea here..."
+          className={cn(DS.input.base, DS.input.textarea, 'h-40 p-6')}
+        />
 
-        <div className={ cn(DS.utils.topBorder, 'px-6 py-4 bg-gray-50/50 flex items-center justify-between') }>
+        <div
+          className={cn(
+            DS.utils.topBorder,
+            'px-6 py-4 bg-gray-50/50 flex items-center justify-between'
+          )}
+        >
           <div className="flex items-center gap-3">
             <OptimizerSettingsPopover
-              optimizationSettings={ optimizationSettings }
-              updateOptimizationSettings={ updateOptimizationSettings }
+              optimizationSettings={settings}
+              updateOptimizationSettings={updateOptimizationSettings}
             />
-            <span className={ DS.utils.dividerVertical }></span>
-            <TemplateSettingsPopover
-              optimizationSettings={ optimizationSettings }
-              updateOptimizationSettings={ updateOptimizationSettings }
-            />
-            <span className={ DS.utils.dividerVertical }></span>
-            <span className={ DS.text.metaMuted }>{ inputPrompt.length } chars</span>
+            <span className={DS.utils.dividerVertical}></span>
+            <span className={DS.text.metaMuted}>{prompt.length} chars</span>
           </div>
 
           <button
-            onClick={ handleImprove }
-            disabled={ optimizeMutation.isPending }
-            className={ cn(
+            onClick={handleImprove}
+            disabled={optimizeMutation.isPending}
+            className={cn(
               DS.button.base,
               'px-5 py-2.5 shadow-sm',
               optimizeMutation.isPending
                 ? DS.button.loading
                 : cn(DS.button.primary, 'hover:shadow-md')
-            ) }
+            )}
           >
-            { optimizeMutation.isPending ? (
+            {optimizeMutation.isPending ? (
               <motion.div
-                animate={ { rotate: 360 } }
-                transition={ { duration: 1, repeat: Infinity, ease: 'linear' } }>
-                <Zap size={ 16 } className="fill-current"/> {/*Todo Change animation*/ }
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              >
+                <Zap size={16} className="fill-current" />{' '}
+                {/*Todo Change animation*/}
               </motion.div>
             ) : (
-              <Sparkles size={ 16 }/>
-            ) }
-            { optimizeMutation.isPending ? 'Optimizing...' : 'Improve Prompt' }
+              <Sparkles size={16} />
+            )}
+            {optimizeMutation.isPending ? 'Optimizing...' : 'Improve Prompt'}
           </button>
         </div>
       </div>
 
       <AnimatePresence>
-        { result &&
+        {result && (
           <OutputSection
-            promptData={ result }
-            editedPrompt={ editedPrompt }
-            setEditedPrompt={ setEditedPrompt }
-            onExtract={ onExtract }
+            promptData={result}
+            editedPrompt={editedPrompt}
+            setEditedPrompt={setEditedPrompt}
+            onExtract={onExtract}
           />
-        }
+        )}
       </AnimatePresence>
     </>
   );
