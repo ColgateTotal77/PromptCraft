@@ -10,11 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 import { DS } from '@/lib/design-system';
 import {
-  GeneralizationLevel,
-  TemplateSyntax,
   ExtractionSettings,
-  SYNTAX_DISPLAY_LABELS,
-  GENERALIZATION_DISPLAY_LABELS,
 } from '@/features/dashboard/types/extractorTypes';
 import { Language, LANGUAGE_DETAILS } from '@/features/dashboard/types/types';
 
@@ -27,28 +23,10 @@ export function ExtractionSettingsPopover({
   extractionSettings,
   updateExtractionSettings,
 }: ExtractionSettingsProps) {
-  const { syntax, level, language } = extractionSettings;
-
-  const handleSyntaxChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateExtractionSettings({ syntax: e.target.value as TemplateSyntax });
-  };
-
-  const handleLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateExtractionSettings({ level: e.target.value as GeneralizationLevel });
-  };
+  const { language } = extractionSettings;
 
   const handleLanguageChange = (newLang: Language) => {
     updateExtractionSettings({ language: newLang });
-  };
-
-  const getOptions = <TEnum extends Record<string, string>>(
-    enumObject: TEnum
-  ) => {
-    return Object.entries(enumObject).map(([key, label]) => (
-      <option key={key} value={key}>
-        {label}
-      </option>
-    ));
   };
 
   return (
@@ -74,21 +52,6 @@ export function ExtractionSettingsPopover({
           </h4>
 
           <div className="space-y-2">
-            <label className={DS.text.label}>Syntax</label>
-            <select
-              value={syntax}
-              onChange={handleSyntaxChange}
-              className={cn(
-                DS.utils.focusRing,
-                DS.text.h4,
-                'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5'
-              )}
-            >
-              {getOptions(SYNTAX_DISPLAY_LABELS)}
-            </select>
-          </div>
-
-          <div className="space-y-2">
             <label className={DS.text.label}>Language</label>
             <div className="flex bg-gray-100 p-0.5 rounded-md">
               {Object.entries(LANGUAGE_DETAILS).map(([key, { label }]) => (
@@ -106,21 +69,6 @@ export function ExtractionSettingsPopover({
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className={DS.text.label}>Generalization Level</label>
-            <select
-              value={level}
-              onChange={handleLevelChange}
-              className={cn(
-                DS.utils.focusRing,
-                DS.text.h4,
-                'w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5'
-              )}
-            >
-              {getOptions(GENERALIZATION_DISPLAY_LABELS)}
-            </select>
           </div>
         </div>
       </PopoverContent>

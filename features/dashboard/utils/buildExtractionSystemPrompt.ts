@@ -1,99 +1,36 @@
-import {
-  ExtractionSettings,
-  GeneralizationLevel,
-  TemplateSyntax,
-} from '@/features/dashboard/types/extractorTypes';
+import { ExtractionSettings } from '@/features/dashboard/types/extractorTypes';
 
-export function buildExtractionSystemPrompt(
-  settings: ExtractionSettings
-): string {
-  const { syntax, level, language } = settings;
+export function buildExtractionSystemPrompt(settings: ExtractionSettings): string {
+  const { language } = settings;
 
-  const syntaxInstructions: Record<TemplateSyntax, string> = {
-    SQUARE_BRACKETS: `
-      - Use human-readable placeholders in square brackets.
-      - Example: "Write a blog about [Topic] for [Target Audience]."
-      - Variable naming: Keep spaces, title case (e.g., [Product Name]).
-    `,
-    HANDLEBARS: `
-      - Use double curly braces for variables.
-      - Example: "Write a blog about {{topic}} for {{target_audience}}."
-      - Variable naming: snake_case strictly (e.g., {{product_name}}).
-    `,
-    DOLLAR_SIGN: `
-      - Use JavaScript template literal style.
-      - Example: "Write a blog about \${topic} for \${targetAudience}."
-      - Variable naming: camelCase strictly (e.g., \${productName}).
-    `,
-    ANGLE_BRACKETS: `
-      — Use angle brackets.
-      — Example: "Write a blog about <Topic> for <Target Audience>."
-      — Variable naming: Title Case allowed (e.g., <Product Name>).
-    `,
-  };
-
-  const levelInstructions: Record<GeneralizationLevel, string> = {
-    CONSERVATIVE: `
-      - ONLY replace specific entities like names, dates, locations, or specific numbers.
-      - Keep the prompt structure, tone, and specific instructions EXACTLY as they are.
-      - Goal: Make the prompt reusable for the *same* task but different entities.
-    `,
-    BALANCED: `
-      - Replace specific entities AND distinct constraints that a user might want to change (e.g., "500 words" -> [Word Count]).
-      - Keep the core logic and framework intact.
-      - Goal: A flexible template for similar tasks.
-    `,
-    AGGRESSIVE: `
-      - Abstract the prompt into a high-level framework.
-      - Replace specific tasks with generic variables (e.g., "Write a post" -> "Generate [Content Format]").
-      - Heavily restructure the prompt to be universally applicable.
-    `,
-  };
-
-  const langLogic =
+  const langInstruction =
     language === 'MATCH_USER'
-      ? `
-      CRITICAL LANGUAGE RULE:
-      - Detect the language of the USER'S INPUT.
-      - The 'template' text, 'title', 'description', and variable 'labels' MUST be in that language.
-      - Variable 'names' (ids) should remain English/ASCII (e.g., {{user_name}}) for code compatibility.`
-      : `
-      - Translate the template content, title, and descriptions into English.
-      - Variable names must be in English.`;
+      ? "Detect user's language. Use ONLY that language for the 'title' and the 'template' content."
+      : "Output EVERYTHING in English (both 'title' and 'template').";
 
   return `
 ### ROLE
-You are an expert Prompt Architect and Template Engineer. Your goal is to convert specific, one-time prompts into reusable, dynamic templates.
+You are a Senior Template Architect. Your goal is to transform a static AI prompt into a reusable, dynamic template with a professional title.
 
-### TASK
-Analyze the user's raw prompt, identify variable parameters based on the settings, and generate a structured JSON response.
+### OBJECTIVE
+1. **Analyze**: Identify the core purpose and specific data points (topics, roles, formats) in the input prompt.
+2. **Abstract**: Replace all specific data points with descriptive variables in double curly braces, e.g., {{variable_name}}.
+3. **Title**: Create a concise, catchy title for the template (e.g., "Professional Blog Architect", "Python Code Reviewer").
 
-### CONFIGURATION
-1. **Syntax Style**: ${syntax}
-   ${syntaxInstructions[syntax]}
+### EXTRACTION RULES
+- **Variable Format**: Use ONLY {{variable_name}} syntax.
+- **Variable Names**: Use snake_case or descriptive names (e.g., {{target_audience}}, {{primary_goal}}).
+- **Verbatim Integrity**: Keep the structural parts of the prompt (instructions, framework headers like ### Role) exactly as they are.
+- **Subject Extraction**: Focus on turning nouns and specific constraints into variables.
 
-2. **Generalization Level**: ${level}
-   ${levelInstructions[level]}
-
-3. **Language**:
-   ${langLogic}
+### LANGUAGE RULE
+${langInstruction}
 
 ### OUTPUT FORMAT
-Return ONLY a valid JSON object. No markdown. No conversational filler.
-
-Schema:
+Return ONLY valid JSON. No markdown, no conversational prose.
 {
-  "template": "The generalized prompt string with syntax applied",
-  "title": "A short, catchy name for this template (max 5 words)",
-  "description": "A 1-sentence explanation of what this template does",
-  "variables": [
-    {
-      "name": "variable_id (e.g., topic, product_name)",
-      "label": "Human readable label (e.g., Topic, Product Name)",
-      "description": "Short hint for the user what to enter here",
-      "type": "text" | "number" | "date"
-    }
-  ]
+  "title": "A short, professional name for the template",
+  "template": "The full prompt text where specific data is replaced by {{variables}}"
 }
-  `.trim();
+`.trim();
 }

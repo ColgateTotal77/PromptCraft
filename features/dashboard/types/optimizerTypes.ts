@@ -47,7 +47,6 @@ export const scoresSchema = z.object({
 
 export const OptimizedPromptOutputSchema = z.object({
   scores: scoresSchema,
-  analysis: z.string(),
   optimizedPrompt: z.string(),
   variables: z.array(PromptVariableSchema),
   framework: PromptFrameworkSchema.optional(),
@@ -66,7 +65,7 @@ export const DEFAULT_OPTIMIZER_SETTINGS: z.infer<
   typeof OptimizationSettingsSchema
 > = {
   framework: 'MODULAR',
-  language: 'MATCH_USER',
+  language: 'ENGLISH',
 };
 
 export const OptimizedPromptHistorySchema = z.object({

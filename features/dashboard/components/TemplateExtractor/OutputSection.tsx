@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, ClipboardEditIcon, Undo2, Braces, Info } from 'lucide-react';
+import { Copy, ClipboardEditIcon, Undo2 } from 'lucide-react';
 import { DS } from '@/lib/design-system';
 import { cn } from '@/lib/utils';
 import { ExtractedTemplateOutput } from '@/features/dashboard/types/extractorTypes';
@@ -42,52 +42,6 @@ export function OutputSection(props: OutputSectionProps) {
         <span className={DS.text.label}>Extracted Template</span>
         <div className={DS.utils.divider}></div>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1 space-y-4">
-          <div className={cn(DS.card.base, 'p-4 space-y-2')}>
-            <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-gray-400 mt-0.5" />
-              <div>
-                <h3 className={cn(DS.text.h4, 'mb-1')}> Description </h3>
-                <p className={DS.text.metaMuted}>{templateData.description}</p>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className={cn(DS.card.base, 'flex flex-col gap-2 bg-gray-100 p-4')}
-          >
-            <div className="flex items-center gap-2">
-              <Braces className="w-3 h-3 text-gray-500" />
-              <h4 className={cn(DS.text.label, 'text-gray-900')}>
-                Variables Found
-              </h4>
-            </div>
-
-            {templateData.variables.length > 0 ? (
-              <ul
-                className={cn(
-                  DS.text.metaMuted,
-                  'text-gray-600 space-y-2 list-none pl-1'
-                )}
-              >
-                {templateData.variables.map((v, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
-                    <span className="font-mono bg-white px-1.5 py-0.5 rounded border border-gray-200 text-gray-700">
-                      {v.name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={cn(DS.text.metaMuted, 'italic pl-1')}>
-                No variables detected
-              </p>
-            )}
-          </div>
-        </div>
 
         <div className="lg:col-span-3">
           <div
@@ -152,7 +106,6 @@ export function OutputSection(props: OutputSectionProps) {
             />
           </div>
         </div>
-      </div>
     </motion.div>
   );
 }

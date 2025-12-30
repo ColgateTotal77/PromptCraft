@@ -192,8 +192,8 @@ export const appRouter = router({
         nextCursor:
           combinedData.length > 0
             ? {
-                optimizedOffset: optimizedOffset + optimizedData.length,
-                templateOffset: templateOffset + templateData.length,
+                optimizedOffset: optimizedOffset + (optimizedData?.length || 0),
+                templateOffset: templateOffset + (templateData?.length || 0),
               }
             : undefined,
       };

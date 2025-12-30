@@ -61,7 +61,6 @@ ${langInstruction}
 Return ONLY valid JSON. No markdown, no prose.
 {
   "scores": { "clarity": number, "context": number},
-  "analysis": "Brief explanation of improvements",
   "optimizedPrompt": "The full structured prompt",
   "variables": [
     { "phrase": "exact text from optimized prompt", "options": ["alt1", "alt2", "alt3"] }
