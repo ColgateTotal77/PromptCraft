@@ -36,7 +36,8 @@ export const FRAMEWORK_DETAILS: Record<PromptFramework, SettingDetail> = {
 };
 
 export const PromptVariableSchema = z.object({
-  phrase: z.string(),
+  // originalPhrase: z.string(),
+  category: z.string(),
   options: z.array(z.string()),
 });
 

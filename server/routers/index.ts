@@ -10,6 +10,7 @@ import {
 } from '@/features/dashboard/types/optimizerTypes';
 import { ExtractionSettingsSchema } from '@/features/dashboard/types/extractorTypes';
 import { LIMITS } from '@/lib/constants';
+import { buildExtractVariablesSystemPrompts } from '@/features/dashboard/utils/buildExtractVariablesSystemPrompts';
 
 export const appRouter = router({
   optimize: protectedProcedure
@@ -21,36 +22,38 @@ export const appRouter = router({
     )
     .output(OptimizedPromptOutputSchema)
     .mutation(async ({ input, ctx }) => {
-      const systemPrompt = buildOptimizationSystemPrompt(input.settings);
-      const messages = [
-        { role: 'system', content: systemPrompt },
+      const systemPromptOptim = buildOptimizationSystemPrompt(input.settings);
+      const messagesOptim = [
+        { role: 'system', content: systemPromptOptim },
         { role: 'user', content: input.prompt },
       ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
-      const res = await runOpenAIRequest('gpt-4o-mini', messages);
+      const optimizedPrompt = await runOpenAIRequest('gpt-4.1-nano', messagesOptim);
 
-      if (res.error) throw new Error(res.error.message);
+      if (optimizedPrompt.error) throw new Error(optimizedPrompt.error.message);
 
-      console.log('systemPrompt: ', systemPrompt);
-      console.log('_____________________');
-      console.log('res: ', JSON.stringify(res, null, 2));
+      const systemPromptExct = buildExtractVariablesSystemPrompts();
+      const messagesExct = [
+        { role: 'system', content: systemPromptExct },
+        { role: 'user', content: optimizedPrompt.optimizedPrompt },
+      ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
-      res.optimizedPrompt = res.optimizedPrompt.replace(
+      const variables = await runOpenAIRequest('gpt-4.1-nano', messagesExct);
+
+      optimizedPrompt.optimizedPrompt = optimizedPrompt.optimizedPrompt.replace(
         /(?<!^|[\n\r])###\s*(?!\n)/gm,
         '\n### '
       );
 
-      for (const variable of res.variables) {
-        variable.options.push(variable.phrase);
-      }
+      optimizedPrompt.variables = variables.variables;
 
       const { data, error } = await ctx.supabase
         .from('optimizedPrompts')
         .insert([
           {
             prompt: input.prompt,
-            optimizedPrompt: res.optimizedPrompt,
-            scores: res.scores,
+            optimizedPrompt: optimizedPrompt.optimizedPrompt,
+            scores: optimizedPrompt.scores,
             settings: input.settings,
             userId: ctx.user.id,
           },
@@ -58,7 +61,7 @@ export const appRouter = router({
         .select();
 
       if (error) throw new Error(error.message);
-      return res;
+      return optimizedPrompt;
     }),
 
   extract: protectedProcedure
@@ -217,8 +220,6 @@ export const appRouter = router({
         console.error('Supabase Error:', error);
         throw new Error(error.message);
       }
-
-      console.log('Updated Data:', data);
 
       if (!data || data.length === 0) {
         console.warn('No rows were updated. Check RLS or IDs.');

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Undo2, Copy, ClipboardEditIcon, FileOutput } from 'lucide-react';
 import { DS } from '@/lib/design-system';
@@ -10,8 +10,6 @@ import { ScoreCard } from '@/components/ScoreCard';
 
 interface OutputSectionProps {
   promptData: OptimizedPromptOutput;
-  editedPrompt: string;
-  setEditedPrompt: (prompt: string) => void;
   onExtract: (prompt?: string) => void;
 }
 
@@ -41,7 +39,13 @@ function VariableSelector({
 
 export function OutputSection(props: OutputSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const { promptData, editedPrompt, setEditedPrompt, onExtract } = props;
+  const [editedPrompt, setEditedPrompt] = useState<string>("");
+  const { promptData, onExtract } = props;
+
+  useEffect(() => {
+    setEditedPrompt(promptData.optimizedPrompt);
+    setIsEditing(false);
+  }, [promptData.optimizedPrompt, setEditedPrompt]);
 
   const onCopy = async () => {
     await navigator.clipboard.writeText(editedPrompt);
@@ -62,7 +66,7 @@ export function OutputSection(props: OutputSectionProps) {
 
     let parts: (string | React.ReactNode)[] = [editedPrompt];
 
-    for (const variable of promptData.variables) {
+    promptData.variables.forEach((variable, varIndex) => {
       const newParts: (string | React.ReactNode)[] = [];
 
       parts.forEach((part) => {
@@ -81,12 +85,12 @@ export function OutputSection(props: OutputSectionProps) {
         }
 
         const subParts = part.split(currentSelection);
-        subParts.forEach((subPart, index) => {
+        subParts.forEach((subPart, subIndex) => {
           newParts.push(subPart);
-          if (index < subParts.length - 1) {
+          if (subIndex < subParts.length - 1) {
             newParts.push(
               <VariableSelector
-                key={`${promptData.framework}-${variable.phrase}-${index}`}
+                key={`${varIndex}-${subIndex}`}
                 phrase={currentSelection}
                 options={variable.options}
                 onSelect={(val) => handleVariableChange(currentSelection, val)}
@@ -96,7 +100,7 @@ export function OutputSection(props: OutputSectionProps) {
         });
       });
       parts = newParts;
-    }
+    })
 
     return parts;
   }, [editedPrompt, promptData]);

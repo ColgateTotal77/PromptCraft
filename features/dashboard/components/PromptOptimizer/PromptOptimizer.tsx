@@ -22,7 +22,6 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
     DEFAULT_OPTIMIZER_SETTINGS
   );
   const [result, setResult] = useState<null | OptimizedPromptOutput>(null);
-  const [editedPrompt, setEditedPrompt] = useState('');
   const optimizeMutation = trpc.optimize.useMutation();
   const utils = trpc.useUtils();
 
@@ -36,8 +35,6 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
       });
 
       setResult({ ...generatedData, framework: settings.framework });
-      setEditedPrompt(generatedData.optimizedPrompt);
-
       await utils.getStats.invalidate();
     } catch (error) {
       console.log(error);
@@ -109,8 +106,6 @@ export function PromptOptimizer({ onExtract }: PromptOptimizerProps) {
         {result && (
           <OutputSection
             promptData={result}
-            editedPrompt={editedPrompt}
-            setEditedPrompt={setEditedPrompt}
             onExtract={onExtract}
           />
         )}

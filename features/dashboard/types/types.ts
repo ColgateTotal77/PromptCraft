@@ -23,3 +23,10 @@ export const LANGUAGE_DETAILS: Record<
       'Translates and optimizes the prompt into English, regardless of the input language. Recommended for best AI performance.',
   },
 };
+
+export const langInstruction = (language: Language) => (
+  language === 'MATCH_USER'
+    ? "Detect user's language. Use ONLY that language."
+    : 'Output EVERYTHING in English.'
+)
+
